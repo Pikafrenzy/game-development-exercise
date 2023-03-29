@@ -8,7 +8,7 @@ The goal of this assignment is to give you hands-on experience writing well-writ
 
 This game was created by:
 
-- `Your Name Here` (`Your GitHub ID Here as a link to your GitHub profile page`)
+- `Lo Ho Hin Ambrose` (`Pikafrenzy`)
 
 ## Starter code
 

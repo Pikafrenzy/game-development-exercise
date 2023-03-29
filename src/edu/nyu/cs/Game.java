@@ -12,7 +12,7 @@ import processing.sound.*; // import the processing sound library
  * Describe your game succinctly here, and update the author info below.
  * Some starter code has been included for your reference - feel free to delete or modify it.
  * 
- * @author Foo Barstein
+ * @author Ho Hin Ambrose Lo
  * @version 0.1
  */
 public class Game extends PApplet {
@@ -20,10 +20,13 @@ public class Game extends PApplet {
   private SoundFile soundStartup; // will refer to a sound file to play when the program first starts
   private SoundFile soundClick; // will refer to a sound file to play when the user clicks the mouse
   private PImage imgMe; // will hold a photo of me
-  private ArrayList<Star> stars; // will hold an ArrayList of Star objects
-  private final int NUM_STARS = 20; // the number of stars to create
-  private final int POINTS_PER_STAR = 1; // the number of points to award the user for each star they destroy
+
+  private String scene = "start";
+  private PImage imgLogo;
+  private PFont eightBitFont;
+
   private int score = 0; // the user's score
+  private boolean gameStarted = false;
 
 
 	/**
@@ -48,18 +51,19 @@ public class Game extends PApplet {
 		path = Paths.get(cwd, "images", "me.png").toString(); // e.g "images/me.png" on Mac/Unix vs. "images\me.png" on Windows
     this.imgMe = loadImage(path);
 
+    // load up game logo
+    path = Paths.get(cwd,"images","logo.png").toString();
+    this.imgLogo = loadImage(path);
+
+    // load game font
+    path = Paths.get(cwd,"fonts","PixeloidSans-JR6qo.ttf").toString();
+    this.eightBitFont = createFont(path,32);
+    textFont(this.eightBitFont);
+
     // some basic settings for when we draw shapes
     this.ellipseMode(PApplet.CENTER); // setting so ellipses radiate away from the x and y coordinates we specify.
     this.imageMode(PApplet.CENTER); // setting so the ellipse radiates away from the x and y coordinates we specify.
-
-    // create some stars, starting life at the center of the window
-    stars = new ArrayList<Star>();
-    for (int i=0; i<this.NUM_STARS; i++) {
-      // create a star and add it to the array list
-  		path = Paths.get(cwd, "images", "star.png").toString(); // e.g "images/star.png" on Mac/Unix vs. "images\star.png" on Windows
-      Star star = new Star(this, path, this.width/2, this.height/2);
-      this.stars.add(star);
-    }
+    textAlign(CENTER);
 	}
 
 	/**
@@ -68,26 +72,36 @@ public class Game extends PApplet {
    * - There are methods for drawing various shapes, including `ellipse()`, `circle()`, `rect()`, `square()`, `triangle()`, `line()`, `point()`, etc.
 	 */
 	public void draw() {
-    // fill the window with solid color
-    this.background(0, 0, 0); // fill the background with the specified r, g, b color.
+    switch(scene){
+      case "start":
+        this.background(0, 49, 82);
+        image(this.imgLogo,(this.width/2),(this.height/2-90));
+        String startString = "Press SPACEBAR to start!";
+        textSize(70);
+        text(startString, this.width/2, this.height-50);
+        fill(238,28,37);
+        textSize(71);
+        text(startString, this.width/2, this.height-50);
+        fill(255,200,200);
 
-    // show an image of me that wanders around the window
-    image(this.imgMe, this.width / 2, this.height/2); // draw image to center of window
+        break;
 
-    // draw an ellipse at the current position of the mouse
-    this.fill(255, 255, 255); // set the r, g, b color to use for filling in any shapes we draw later.
-    this.ellipse(this.mouseX, this.mouseY, 60, 60); // draw an ellipse wherever the mouse is
+      case "default": //TODO: remove this from sample code
+          // fill the window with solid color
+        this.background(0, 0, 0); // fill the background with the specified r, g, b color.
 
-    // draw all stars to their current position
-    for (int i=0; i<this.stars.size(); i++) {
-      Star star = this.stars.get(i); // get the current Star object from the ArrayList
-      star.moveRandomly(); // move the star by a random amount
-      star.draw(); // draw the star to the screen
-    }
+        // show an image of me that wanders around the window
+        image(this.imgMe, this.width / 2, this.height/2); // draw image to center of window
 
-    // show the score at the bottom of the window
-    String scoreString = String.format("SCORE: %d", this.score);
-    text(scoreString, this.width/2, this.height-50);
+        // draw an ellipse at the current position of the mouse
+        this.fill(255, 255, 255); // set the r, g, b color to use for filling in any shapes we draw later.
+        this.ellipse(this.mouseX, this.mouseY, 60, 60); // draw an ellipse wherever the mouse is
+
+        // show the score at the bottom of the window
+        String scoreString = String.format("SCORE: %d", this.score);
+        text(scoreString, this.width/2, this.height-50);
+        break;
+      }
 
 	}
 
@@ -99,6 +113,19 @@ public class Game extends PApplet {
 	public void keyPressed() {
     // the `key` variable holds the char of the key that was pressed, the `keyCode` variable holds the ASCII/Unicode numeric code for that key.
 		System.out.println(String.format("Key pressed: %s, key code: %d.", this.key, this.keyCode));
+    switch(this.key){
+      case ' ':
+        if (!gameStarted){
+          startGame();
+        }
+        else {
+
+        }
+        break;
+      case '`': //TODO: remove this debug feature
+        System.exit(0); //for temporary testing 
+        break;
+    }
 	}  
 
 	/**
@@ -109,19 +136,6 @@ public class Game extends PApplet {
 	public void mouseClicked() {
 		System.out.println(String.format("Mouse clicked at: %d:%d.", this.mouseX, this.mouseY));
 
-    // check whether we have clicked on a star
-    for (int i=0; i<this.stars.size(); i++) {
-      Star star = this.stars.get(i); // get the current Star object from the ArrayList
-      // check whether the position where the user clicked was within this star's boundaries
-      if (star.overlaps(this.mouseX, this.mouseY, 10)) {
-        // if so, award the user some points
-        score += POINTS_PER_STAR;        
-        // play a thump sound
-        this.soundClick.play();
-        // delete the star from the ArrayList
-        this.stars.remove(star);
-      }
-    }
 	}
 
 	/**
@@ -141,6 +155,33 @@ public class Game extends PApplet {
 		size(1200, 800); // set the map window size, using the OpenGL 2D rendering engine
 		System.out.println(String.format("Set up the window size: %d, %d.", width, height));    
   }
+
+  private void startGame(){
+    gameStarted = true;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /**
    * The main function is automatically called first in a Java program.
