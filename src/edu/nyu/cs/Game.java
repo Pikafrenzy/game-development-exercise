@@ -24,6 +24,8 @@ public class Game extends PApplet {
   private String scene = "start";
   private PImage imgLogo;
   private PFont eightBitFont;
+  private Player player;
+  private ArrayList<Platform> currentScenePlatforms = new ArrayList<Platform>();
 
   private int score = 0; // the user's score
   private boolean gameStarted = false;
@@ -48,7 +50,8 @@ public class Game extends PApplet {
     this.soundClick = new SoundFile(this, path); // if you're on Windows, you may have to change this to "sounds\\thump.aiff"
  
     // load up an image of me
-		path = Paths.get(cwd, "images", "me.png").toString(); // e.g "images/me.png" on Mac/Unix vs. "images\me.png" on Windows
+    //TODO: delete along with all other demo code
+		path = Paths.get(cwd, "images","demo","me.png").toString(); // e.g "images/me.png" on Mac/Unix vs. "images\me.png" on Windows
     this.imgMe = loadImage(path);
 
     // load up game logo
@@ -60,10 +63,16 @@ public class Game extends PApplet {
     this.eightBitFont = createFont(path,32);
     textFont(this.eightBitFont);
 
+    // create Player object
+    path = Paths.get(cwd,"images","playerStandingStill.png").toString();
+    player = new Player(this, path, 0, 0);
+
     // some basic settings for when we draw shapes
     this.ellipseMode(PApplet.CENTER); // setting so ellipses radiate away from the x and y coordinates we specify.
     this.imageMode(PApplet.CENTER); // setting so the ellipse radiates away from the x and y coordinates we specify.
     textAlign(CENTER);
+
+
 	}
 
 	/**
@@ -103,6 +112,7 @@ public class Game extends PApplet {
         break;
       }
 
+      player.processMovements();
 	}
 
 	/**

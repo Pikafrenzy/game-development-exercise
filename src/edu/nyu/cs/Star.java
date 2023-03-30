@@ -1,3 +1,5 @@
+//TODO: Delete once game done!
+
 package edu.nyu.cs;
 
 import processing.core.PApplet;
