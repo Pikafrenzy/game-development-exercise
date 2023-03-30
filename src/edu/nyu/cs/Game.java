@@ -33,6 +33,9 @@ public class Game extends PApplet {
 
   private int score = 0; // the user's score
   private boolean gameStarted = false;
+  private boolean gameFinished = false;
+  private double timer = 0.0;
+  private String displayTime;
 
   private boolean isRightPressed = false;
   private boolean isLeftPressed = false;
@@ -99,6 +102,8 @@ public class Game extends PApplet {
    * - There are methods for drawing various shapes, including `ellipse()`, `circle()`, `rect()`, `square()`, `triangle()`, `line()`, `point()`, etc.
 	 */
 	public void draw() {
+    updateTimer();
+    displayTime = getTimerDisplayValue();
     switch(scene){
       case "start":
         this.background(0, 49, 82);
@@ -241,7 +246,22 @@ public class Game extends PApplet {
     // create Player object
     player = new Player(this, playerStill, playerGlide, playerRFootMove, playerLFootMove, 0, this.height-200,128,128);
     scene = "0m";
+    timer = 0.0;
 
+  }
+
+  private void updateTimer(){
+    if (gameStarted && !gameFinished){
+      this.timer += (1/60);
+    }
+  }
+  private String getTimerDisplayValue(){
+    String display = "";
+    int seconds = (int) timer;
+    int minutes = seconds/60;
+    int milliseconds = (int) ((timer - seconds)*1000);
+    display = minutes + ":" + seconds + "." + milliseconds;
+    return display;
   }
 
 
