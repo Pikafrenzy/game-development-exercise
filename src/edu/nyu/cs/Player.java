@@ -37,9 +37,9 @@ public class Player {
     private int rightInertia = 0;
 
     private final float speed = 20;
-    private final float jumpStrength = 0.5f;
-    private final float gravityFall = 10;
-    private final float gravityGlide = 5;
+    private final float jumpStrength = 0.75f;
+    private final float gravityFall = 1f;
+    private final float gravityGlide = 0.5f;
     private float xVelocity = 0;
     private float yVelocity = 0;
 
@@ -125,6 +125,7 @@ public class Player {
     }
     public void processMovements(){
         if (!isTouchingGround){
+            fall();
             if (isFalling){
                 this.addYVelocity(gravityFall);
             }
@@ -134,6 +135,7 @@ public class Player {
         }
         else{
             doubleJump=1;
+            canGlide = false;
         }
 
         if (isJumping){
