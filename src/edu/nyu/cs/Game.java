@@ -154,6 +154,9 @@ public class Game extends PApplet {
           case 'z':
             player.glide();
             break;
+          case 'r':
+            player.restart();
+            break;
           case '`': //TODO: remove this debug feature
             System.exit(0); //for temporary testing 
             break;
@@ -211,10 +214,9 @@ public class Game extends PApplet {
     // create Player object
     String cwd = Paths.get("").toAbsolutePath().toString(); // the current working directory as an absolute path
     String path = Paths.get(cwd,"images","playerStandingStill.png").toString();
-    player = new Player(this, path, 0, 0);
+    player = new Player(this, path, 0, 0,64,64);
 
   }
-
 
 
 

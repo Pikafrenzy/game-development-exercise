@@ -27,5 +27,50 @@ public class Platform {
         this.app.imageMode(PApplet.CORNERS); // setting so the image is drawn centered on the specified x and y coordinates
         this.app.image(this.img, this.x, this.y, this.width, this.height);
     }
-    
+    public int[][] getLeftWall(){
+        int[][] wallCoordinates = new int[2][2];
+        wallCoordinates[0][0] = this.x;
+        wallCoordinates[0][1] = this.y;
+
+        wallCoordinates[1][0] = this.x;
+        wallCoordinates[1][1] = this.y+this.height;
+
+        return wallCoordinates;
+    }
+    public int[][] getRightWall(){
+        int[][] wallCoordinates = new int[2][2];
+        wallCoordinates[0][0] = this.x+this.width;
+        wallCoordinates[0][1] = this.y;
+
+        wallCoordinates[1][0] = this.x+this.width;
+        wallCoordinates[1][1] = this.y+this.height;
+        
+        return wallCoordinates;
+    }
+    public int[][] getFloor(){ //get the top surface of the platform
+        int[][] wallCoordinates = new int[2][2];
+        wallCoordinates[0][0] = this.x;
+        wallCoordinates[0][1] = this.y+this.height;
+
+        wallCoordinates[1][0] = this.x+width;
+        wallCoordinates[1][1] = this.y+this.height;
+        
+        return wallCoordinates;
+    }
+    public int[][] getCeiling(){ //get the bottom surface of the platform
+        int[][] wallCoordinates = new int[2][2];
+        wallCoordinates[0][0] = this.x;
+        wallCoordinates[0][1] = this.y;
+
+        wallCoordinates[1][0] = this.x+width;
+        wallCoordinates[1][1] = this.y;
+        
+        return wallCoordinates;
+    }
+    public int getWidth(){
+        return this.width;
+    }
+    public int getHeight(){
+        return this.height;
+    }
 }
