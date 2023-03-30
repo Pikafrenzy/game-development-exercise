@@ -30,14 +30,17 @@ public class Game extends PApplet {
   private int score = 0; // the user's score
   private boolean gameStarted = false;
 
+  private boolean isRightPressed = false;
+  private boolean isLeftPressed = false;
+
 
 	/**
 	 * This method will be automatically called by Processing when the program runs.
    * - Use it to set up the initial state of any instance properties you may use in the draw method.
 	 */
 	public void setup() {
-    // set the cursor to crosshairs
-    this.cursor(PApplet.CROSS);
+    // hide Cursor
+    this.noCursor();
 
     // load up a sound file and play it once when program starts up
 		String cwd = Paths.get("").toAbsolutePath().toString(); // the current working directory as an absolute path
@@ -63,9 +66,7 @@ public class Game extends PApplet {
     this.eightBitFont = createFont(path,32);
     textFont(this.eightBitFont);
 
-    // create Player object
-    path = Paths.get(cwd,"images","playerStandingStill.png").toString();
-    player = new Player(this, path, 0, 0);
+    
 
     // some basic settings for when we draw shapes
     this.ellipseMode(PApplet.CENTER); // setting so ellipses radiate away from the x and y coordinates we specify.
@@ -112,6 +113,13 @@ public class Game extends PApplet {
         break;
       }
 
+      if (isRightPressed){
+        player.moveRight();
+      }
+      if (isLeftPressed){
+        player.moveLeft();
+      }
+
       player.processMovements();
 	}
 
@@ -123,20 +131,52 @@ public class Game extends PApplet {
 	public void keyPressed() {
     // the `key` variable holds the char of the key that was pressed, the `keyCode` variable holds the ASCII/Unicode numeric code for that key.
 		System.out.println(String.format("Key pressed: %s, key code: %d.", this.key, this.keyCode));
-    switch(this.key){
-      case ' ':
-        if (!gameStarted){
-          startGame();
-        }
-        else {
-
-        }
+    switch(this.keyCode){
+      case RIGHT:
+        isRightPressed = true;
         break;
-      case '`': //TODO: remove this debug feature
-        System.exit(0); //for temporary testing 
+      case LEFT:
+        isLeftPressed = true;
         break;
+      default:
+        switch(this.key){
+          case ' ':
+            if (!gameStarted){
+              startGame();
+            }
+            break;
+          case 'c':
+            player.jump();
+            break;
+          case 'x':
+            player.doubleJump();
+            break;
+          case 'z':
+            player.glide();
+            break;
+          case '`': //TODO: remove this debug feature
+            System.exit(0); //for temporary testing 
+            break;
+        }
     }
 	}  
+
+  public void keyReleased(){
+        // the `key` variable holds the char of the key that was released, the `keyCode` variable holds the ASCII/Unicode numeric code for that key.
+		System.out.println(String.format("Key released: %s, key code: %d.", this.key, this.keyCode));
+    switch(this.keyCode){
+      case RIGHT:
+        isRightPressed = false;
+        break;
+      case LEFT:
+        isLeftPressed = false;
+        break;
+      default:
+        switch(this.key){
+          
+        }
+    }
+  }
 
 	/**
 	 * This method is automatically called by Processing every time the user clicks a mouse button.
@@ -168,6 +208,11 @@ public class Game extends PApplet {
 
   private void startGame(){
     gameStarted = true;
+    // create Player object
+    String cwd = Paths.get("").toAbsolutePath().toString(); // the current working directory as an absolute path
+    String path = Paths.get(cwd,"images","playerStandingStill.png").toString();
+    player = new Player(this, path, 0, 0);
+
   }
 
 
