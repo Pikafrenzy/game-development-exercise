@@ -25,6 +25,10 @@ public class Game extends PApplet {
   private PImage imgLogo;
   private PFont eightBitFont;
   private Player player;
+  private PImage playerStill;
+  private PImage playerRFootMove;
+  private PImage playerLFootMove;
+  private PImage playerGlide;
   private ArrayList<Platform> currentScenePlatforms = new ArrayList<Platform>();
 
   private int score = 0; // the user's score
@@ -66,6 +70,19 @@ public class Game extends PApplet {
     this.eightBitFont = createFont(path,32);
     textFont(this.eightBitFont);
 
+    // load player
+    path = Paths.get(cwd,"images","playerStandingStill.png").toString();
+    this.playerStill = loadImage(path);
+
+    path = Paths.get(cwd, "images","playerGliding.png").toString();
+    this.playerGlide = loadImage(path);
+
+    path = Paths.get(cwd, "images","playerMove1.png").toString();
+    this.playerRFootMove = loadImage(path);
+
+    path = Paths.get(cwd,"images","playerMove2.png").toString();
+    this.playerLFootMove = loadImage(path);
+
     
 
     // some basic settings for when we draw shapes
@@ -96,6 +113,12 @@ public class Game extends PApplet {
 
         break;
 
+      case "0m":
+        this.background(0,49,82);
+        player.draw();
+
+        break;
+
       case "default": //TODO: remove this from sample code
           // fill the window with solid color
         this.background(0, 0, 0); // fill the background with the specified r, g, b color.
@@ -120,7 +143,9 @@ public class Game extends PApplet {
         player.moveLeft();
       }
 
-      player.processMovements();
+      if (gameStarted){
+        player.processMovements();
+      }
 	}
 
 	/**
@@ -170,9 +195,11 @@ public class Game extends PApplet {
     switch(this.keyCode){
       case RIGHT:
         isRightPressed = false;
+        key = '\0';
         break;
       case LEFT:
         isLeftPressed = false;
+        key = '\0';
         break;
       default:
         switch(this.key){
@@ -212,9 +239,8 @@ public class Game extends PApplet {
   private void startGame(){
     gameStarted = true;
     // create Player object
-    String cwd = Paths.get("").toAbsolutePath().toString(); // the current working directory as an absolute path
-    String path = Paths.get(cwd,"images","playerStandingStill.png").toString();
-    player = new Player(this, path, 0, 0,64,64);
+    player = new Player(this, playerStill, playerGlide, playerRFootMove, playerLFootMove, 0, this.height-200,128,128);
+    scene = "0m";
 
   }
 

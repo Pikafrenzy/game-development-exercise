@@ -24,7 +24,7 @@ public class Platform {
     }
     public void draw() {
         // draw this object's image at its x and y coordinates
-        this.app.imageMode(PApplet.CORNERS); // setting so the image is drawn centered on the specified x and y coordinates
+        this.app.imageMode(PApplet.CORNER); // setting so the image is drawn centered on the specified x and y coordinates
         this.app.image(this.img, this.x, this.y, this.width, this.height);
     }
     public int[][] getLeftWall(){

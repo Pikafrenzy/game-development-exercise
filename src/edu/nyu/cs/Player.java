@@ -9,9 +9,15 @@ import java.util.ArrayList;
 public class Player {
      // instance properties
     private Game app; // will hold a reference to the main Game object
-    private PImage img; // will hold a reference to an image of the player
+    private PImage still; // will hold a reference to an image of the player
+    private PImage glide;
+    private PImage moveRFoot;
+    private PImage moveLFoot;
+    private int animationFlip = 0;
     private int x; // will hold the bottom-left x coordinate of this object on the screen
     private int y; // will hold the bottom-left y coordinate of this object on the screen
+    private int initX;
+    private int initY;
     private int width; //will hold the width of this object
     private int height; //will hold the height of this object
     private int[][] boundingBox;
@@ -31,16 +37,22 @@ public class Player {
     private int rightInertia = 0;
 
     private final float speed = 20;
-    private final float jumpStrength = 5;
+    private final float jumpStrength = 0.5f;
     private final float gravityFall = 10;
     private final float gravityGlide = 5;
     private float xVelocity = 0;
     private float yVelocity = 0;
 
-    public Player(Game app, String imgFilePath, int x, int y, int width, int height){
+    public Player(Game app, PImage still, PImage glide, PImage moveRFoot, PImage moveLFoot, int x, int y, int width, int height){
         this.app = app;
-        this.img = app.loadImage(imgFilePath);
         
+        this.still = still;
+        this.glide = glide;
+        this.moveLFoot = moveLFoot;
+        this.moveRFoot = moveRFoot;
+        
+        this.initX = x;
+        this.initY = y;
         this.x = x;
         this.y = y;
         this.width = width;
@@ -109,18 +121,15 @@ public class Player {
     public void glide(){
         if (!isTouchingGround){
             canGlide = true;
-            String cwd = Paths.get("").toAbsolutePath().toString(); // the current working directory as an absolute path
-            String path = Paths.get(cwd,"images","playerGliding.png").toString();
-            setImage(path);
         }
     }
     public void processMovements(){
         if (!isTouchingGround){
             if (isFalling){
-                this.addYVelocity(-gravityFall);
+                this.addYVelocity(gravityFall);
             }
             else if (isGliding){
-                this.addYVelocity(-gravityGlide);
+                this.addYVelocity(gravityGlide);
             }
         }
         else{
@@ -131,15 +140,18 @@ public class Player {
             if(jumpInertia < maxKeyPressInertia){
                 //jump
                 float jumpVelocity = (jumpStrength * (maxKeyPressInertia-jumpInertia));
-                this.addYVelocity(jumpVelocity);
+                this.addYVelocity(-jumpVelocity);
                 jumpInertia++;
+            }
+            else{
+                isJumping = false;
             }
 
         }
         if (isMovingLeft){
             if(leftInertia < maxKeyPressInertia){
                 //move left
-                this.setXVelocity(speed);
+                this.setXVelocity(-speed);
                 leftInertia++;
             }
             else {
@@ -151,12 +163,12 @@ public class Player {
         if (isMovingRight){
             if(rightInertia < maxKeyPressInertia){
                 //move right
-                this.setXVelocity(-speed);
+                this.setXVelocity(speed);
                 rightInertia++;
             }
             else {
-                this.setYVelocity(0);
-                isMovingLeft = false;
+                this.setXVelocity(0);
+                isMovingRight = false;
             }
 
         }
@@ -272,12 +284,36 @@ public class Player {
 
     public void draw() {
         // draw this object's image at its x and y coordinates
-        this.app.imageMode(PApplet.CORNERS); // setting so the image is drawn centered on the specified x and y coordinates
-        this.app.image(this.img, this.x, this.y,this.width,this.height);
+        this.app.imageMode(PApplet.CORNER); // setting so the image is drawn centered on the specified x and y coordinates
+        this.app.image(this.getCurrentImage(), this.x, this.y,this.width,this.height);
     }
 
-    public void setImage(String imgFilePath){
-        this.img = app.loadImage(imgFilePath);
+    public PImage getCurrentImage(){
+        PImage currentImage;
+        if (isGliding){
+            currentImage = glide;
+        }
+        else if(isMovingLeft||isMovingRight){
+            if (animationFlip>=0 && animationFlip < 4){
+                currentImage = moveRFoot;
+                animationFlip++;
+            }
+            else if((animationFlip >=4 && animationFlip <8) || (animationFlip >=12 && animationFlip<16)){
+                currentImage = still;
+                animationFlip++;
+                if(animationFlip == 15){
+                    animationFlip = 0;
+                }
+            }
+            else {
+                currentImage = moveLFoot;
+                animationFlip++;
+            }
+        }
+        else {
+            currentImage = still;
+        }
+        return currentImage;
     }
     public void setX(int x){
         this.x = x;
@@ -312,6 +348,10 @@ public class Player {
     }
 
     public void restart(){
-
+        setXVelocity(0);
+        setYVelocity(0);
+        setX(initX);
+        setY(initY);
+        doubleJump = 1; //TODO: remove when done coding game
     }
 }
