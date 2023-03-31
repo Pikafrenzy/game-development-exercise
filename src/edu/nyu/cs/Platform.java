@@ -13,14 +13,13 @@ public class Platform {
     private int width; //will hold the x dimension of the platform
     private int height; //will hold the y dimension of the platform
 
-    public Platform(Game app, String imgFilePath, int x, int y, int width, int height){
+    public Platform(Game app, PImage tile, int x, int y, int width, int height){
         this.app = app;
-        this.img = app.loadImage(imgFilePath);
+        this.img = tile;
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-
     }
     public void draw() {
         // draw this object's image at its x and y coordinates

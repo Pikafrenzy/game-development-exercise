@@ -1,5 +1,5 @@
 package edu.nyu.cs;
-
+//TODO: troubleshoot start screen, design and implement levels, design falling platform
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
@@ -23,6 +23,7 @@ public class Game extends PApplet {
 
   private String scene = "start";
   private PImage imgLogo;
+  private PImage dirtTile;
   private PFont eightBitFont;
   private Player player;
   private PImage playerStill;
@@ -40,6 +41,8 @@ public class Game extends PApplet {
   private boolean isRightPressed = false;
   private boolean isLeftPressed = false;
 
+  private boolean notPlayedStart = true;
+
 
 	/**
 	 * This method will be automatically called by Processing when the program runs.
@@ -53,7 +56,6 @@ public class Game extends PApplet {
 		String cwd = Paths.get("").toAbsolutePath().toString(); // the current working directory as an absolute path
 		String path = Paths.get(cwd, "sounds", "introJingle.mp3").toString(); // e.g "sounds/vibraphon.mp3" on Mac/Unix vs. "sounds\vibraphon.mp3" on Windows
     this.soundStartup = new SoundFile(this, path);
-    this.soundStartup.play();
 
     //load up soundtrack for the game
     path = Paths.get(cwd,"sounds","soundtrack.mp3").toString();
@@ -86,14 +88,14 @@ public class Game extends PApplet {
     path = Paths.get(cwd,"images","playerMove2.png").toString();
     this.playerLFootMove = loadImage(path);
 
-    
+    // load dirt tile
+    path = Paths.get(cwd,"images","dirtTile.png").toString();
+    this.dirtTile = loadImage(path);
 
     // some basic settings for when we draw shapes
     this.ellipseMode(PApplet.CENTER); // setting so ellipses radiate away from the x and y coordinates we specify.
     this.imageMode(PApplet.CENTER); // setting so the ellipse radiates away from the x and y coordinates we specify.
     textAlign(CENTER);
-
-
 	}
 
 	/**
@@ -102,11 +104,12 @@ public class Game extends PApplet {
    * - There are methods for drawing various shapes, including `ellipse()`, `circle()`, `rect()`, `square()`, `triangle()`, `line()`, `point()`, etc.
 	 */
 	public void draw() {
-    this.background(0,0,0);
-    updateTimer();
-    displayTime = getTimerDisplayValue();
     switch(scene){
       case "start":
+        if (notPlayedStart){
+          this.soundStartup.play();
+          notPlayedStart = false;
+        }
         this.background(0, 49, 82);
         image(this.imgLogo,(this.width/2),(this.height/2-90));
         String startString = "Press SPACEBAR to start!";
@@ -116,29 +119,15 @@ public class Game extends PApplet {
         textSize(71);
         text(startString, this.width/2, this.height-50);
         fill(255,200,200);
-
         break;
-
       case "0m":
         this.background(0,49,82);
-        player.draw();
+        currentScenePlatforms.add(new Platform(this, dirtTile, 0,775, 1200, 1200));
+        for (Platform p:currentScenePlatforms){
+          p.draw();
+        }
 
-        break;
-
-      case "default": //TODO: remove this from sample code
-          // fill the window with solid color
-        this.background(0, 0, 0); // fill the background with the specified r, g, b color.
-
-        // show an image of me that wanders around the window
-        image(this.imgMe, this.width / 2, this.height/2); // draw image to center of window
-
-        // draw an ellipse at the current position of the mouse
-        this.fill(255, 255, 255); // set the r, g, b color to use for filling in any shapes we draw later.
-        this.ellipse(this.mouseX, this.mouseY, 60, 60); // draw an ellipse wherever the mouse is
-
-        // show the score at the bottom of the window
-        String scoreString = String.format("SCORE: %d", this.score);
-        text(scoreString, this.width/2, this.height-50);
+        player.draw(); 
         break;
       }
 
@@ -148,13 +137,15 @@ public class Game extends PApplet {
       if (isLeftPressed){
         player.moveLeft();
       }
-
       if (gameStarted){
         player.processMovements();
+        if (!soundtrack.isPlaying() && !soundStartup.isPlaying()){
+          soundtrack.play();
+        }
+        player.checkCollisions(currentScenePlatforms);
       }
-      if (!soundtrack.isPlaying()){
-        soundtrack.play();
-      }
+      updateTimer();
+      displayTime = getTimerDisplayValue();
 	}
 
 	/**
@@ -232,7 +223,6 @@ public class Game extends PApplet {
     player = new Player(this, playerStill, playerGlide, playerRFootMove, playerLFootMove, 0, this.height-200,128,128);
     scene = "0m";
     timer = 0.0;
-    soundtrack.play();
   }
 
   private void updateTimer(){

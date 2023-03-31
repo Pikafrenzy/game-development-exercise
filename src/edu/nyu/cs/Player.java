@@ -30,6 +30,7 @@ public class Player {
     private boolean isMovingRight = false;
     private boolean isTouchingGround = false;
     private int doubleJump = 1;
+    
 
     private final int maxKeyPressInertia = 5;
     private int jumpInertia = 0;
@@ -61,7 +62,7 @@ public class Player {
 
     }
     private void establishBoundingBox(){
-        int[][] boundingBox = new int[4][2];
+        boundingBox = new int[4][2];
 
         //bottom left corner
         boundingBox[0][0] = this.x;
