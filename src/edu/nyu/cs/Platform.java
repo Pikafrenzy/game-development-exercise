@@ -49,20 +49,20 @@ public class Platform {
     public int[][] getFloor(){ //get the top surface of the platform
         int[][] wallCoordinates = new int[2][2];
         wallCoordinates[0][0] = this.x;
-        wallCoordinates[0][1] = this.y+this.height;
+        wallCoordinates[0][1] = this.y;
 
         wallCoordinates[1][0] = this.x+width;
-        wallCoordinates[1][1] = this.y+this.height;
+        wallCoordinates[1][1] = this.y;
         
         return wallCoordinates;
     }
     public int[][] getCeiling(){ //get the bottom surface of the platform
         int[][] wallCoordinates = new int[2][2];
         wallCoordinates[0][0] = this.x;
-        wallCoordinates[0][1] = this.y;
+        wallCoordinates[0][1] = this.y+this.height;
 
         wallCoordinates[1][0] = this.x+width;
-        wallCoordinates[1][1] = this.y;
+        wallCoordinates[1][1] = this.y+this.height;
         
         return wallCoordinates;
     }

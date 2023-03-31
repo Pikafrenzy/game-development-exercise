@@ -122,7 +122,7 @@ public class Game extends PApplet {
         break;
       case "0m":
         this.background(0,49,82);
-        currentScenePlatforms.add(new Platform(this, dirtTile, 0,775, 1200, 1200));
+        currentScenePlatforms.add(new Platform(this, dirtTile, 0,750, 64, 64));
         for (Platform p:currentScenePlatforms){
           p.draw();
         }
@@ -138,11 +138,13 @@ public class Game extends PApplet {
         player.moveLeft();
       }
       if (gameStarted){
+        player.boundingBox();
+        player.checkCollisions(currentScenePlatforms);
         player.processMovements();
         if (!soundtrack.isPlaying() && !soundStartup.isPlaying()){
           soundtrack.play();
         }
-        player.checkCollisions(currentScenePlatforms);
+
       }
       updateTimer();
       displayTime = getTimerDisplayValue();

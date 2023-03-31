@@ -5,6 +5,7 @@ import processing.core.PImage;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Player {
      // instance properties
@@ -58,25 +59,25 @@ public class Player {
         this.y = y;
         this.width = width;
         this.height = height;
-        establishBoundingBox();
+        boundingBox();
 
     }
-    private void establishBoundingBox(){
+    public void boundingBox(){
         boundingBox = new int[4][2];
 
-        //bottom left corner
+        //top left corner
         boundingBox[0][0] = this.x;
         boundingBox[0][1] = this.y;
 
-        //bottom right corner
+        //top right corner
         boundingBox[1][0] = this.x+this.width;
         boundingBox[1][1] = this.y;
 
-        //top left corner
+        //bottom left corner
         boundingBox[2][0] = this.x;
         boundingBox[2][1] = this.y+this.height;
 
-        //top right corner
+        //bottom right corner
         boundingBox[3][0] = this.x+this.width;
         boundingBox[3][1] = this.y+this.height;
     }
@@ -203,6 +204,7 @@ public class Player {
                     colliding = true;
                 }
             }
+
         }
         if (colliding){
             if(xVelocity>0){
@@ -226,6 +228,7 @@ public class Player {
                     colliding = true;
                 }
             }
+
         }
         if (colliding){
             if(xVelocity<0){
@@ -237,18 +240,21 @@ public class Player {
         boolean colliding = false;
         for (int i = 0; i<platforms.size(); i++){
             int[][] currentFloor = platforms.get(i).getFloor();
-            //check top left player corner
+            System.out.println(Arrays.deepToString(currentFloor));
+            System.out.println(Arrays.deepToString(boundingBox));
+            //check bottom left player corner
             if (boundingBox[2][0] <= currentFloor[1][0] && boundingBox[2][0] >= currentFloor[0][0]){
                 if (boundingBox[2][1]<= currentFloor[0][1] && boundingBox[2][1] >= (currentFloor[0][1]-platforms.get(i).getHeight())){
                     colliding = true;
-                }
+               }
             }
-            //check top right player corner
+            //check bottom right player corner
             if (boundingBox[3][0] <= currentFloor[1][0] && boundingBox[3][0] >= currentFloor[0][0]){
-                if (boundingBox[3][1]<= currentFloor[0][1] && boundingBox[3][1] >= (currentFloor[0][1]-platforms.get(i).getHeight())){
+              if (boundingBox[3][1]<= currentFloor[0][1] && boundingBox[3][1] >= (currentFloor[0][1]-platforms.get(i).getHeight())){
                     colliding = true;
                 }
             }
+
             if (colliding){
                 isTouchingGround = true;
                 if (yVelocity<0){
@@ -265,21 +271,23 @@ public class Player {
         boolean colliding = false;
         for (int i = 0; i<platforms.size(); i++){
             int[][] currentCeiling = platforms.get(i).getCeiling();
-            //check bottom left player corner
+            //check top left player corner
             if (boundingBox[0][0] <= currentCeiling[1][0] && boundingBox[0][0] >= currentCeiling[0][0]){
                 if (boundingBox[0][1]>= currentCeiling[0][1] && boundingBox[0][1] <= (currentCeiling[0][1]+platforms.get(i).getHeight())){
                     colliding = true;
                 }
             }
+            
             //check top right player corner
             if (boundingBox[1][0] <= currentCeiling[1][0] && boundingBox[1][0] >= currentCeiling[0][0]){
                 if (boundingBox[1][1]>= currentCeiling[0][1] && boundingBox[1][1] <= (currentCeiling[0][1]+platforms.get(i).getHeight())){
                     colliding = true;
                 }
             }
+
             if (colliding){
                 if (yVelocity>0){
-                    setYVelocity(0);
+                   setYVelocity(0);
                 }
             }
         }
