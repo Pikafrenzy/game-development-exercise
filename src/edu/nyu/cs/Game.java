@@ -18,7 +18,7 @@ import processing.sound.*; // import the processing sound library
 public class Game extends PApplet {
 
   private SoundFile soundStartup; // will refer to a sound file to play when the program first starts
-  private SoundFile soundClick; // will refer to a sound file to play when the user clicks the mouse
+  private SoundFile soundtrack;
   private PImage imgMe; // will hold a photo of me
 
   private String scene = "start";
@@ -51,14 +51,14 @@ public class Game extends PApplet {
 
     // load up a sound file and play it once when program starts up
 		String cwd = Paths.get("").toAbsolutePath().toString(); // the current working directory as an absolute path
-		String path = Paths.get(cwd, "sounds", "vibraphon.mp3").toString(); // e.g "sounds/vibraphon.mp3" on Mac/Unix vs. "sounds\vibraphon.mp3" on Windows
+		String path = Paths.get(cwd, "sounds", "introJingle.mp3").toString(); // e.g "sounds/vibraphon.mp3" on Mac/Unix vs. "sounds\vibraphon.mp3" on Windows
     this.soundStartup = new SoundFile(this, path);
     this.soundStartup.play();
 
-    // load up a sound file and play it once when the user clicks
-		path = Paths.get(cwd, "sounds", "thump.aiff").toString(); // e.g "sounds/thump.aiff" on Mac/Unix vs. "sounds\thump.aiff" on Windows
-    this.soundClick = new SoundFile(this, path); // if you're on Windows, you may have to change this to "sounds\\thump.aiff"
- 
+    //load up soundtrack for the game
+    path = Paths.get(cwd,"sounds","soundtrack.mp3").toString();
+    this.soundtrack = new SoundFile(this,path);
+
     // load up an image of me
     //TODO: delete along with all other demo code
 		path = Paths.get(cwd, "images","demo","me.png").toString(); // e.g "images/me.png" on Mac/Unix vs. "images\me.png" on Windows
@@ -102,6 +102,7 @@ public class Game extends PApplet {
    * - There are methods for drawing various shapes, including `ellipse()`, `circle()`, `rect()`, `square()`, `triangle()`, `line()`, `point()`, etc.
 	 */
 	public void draw() {
+    this.background(0,0,0);
     updateTimer();
     displayTime = getTimerDisplayValue();
     switch(scene){
@@ -150,6 +151,9 @@ public class Game extends PApplet {
 
       if (gameStarted){
         player.processMovements();
+      }
+      if (!soundtrack.isPlaying()){
+        soundtrack.play();
       }
 	}
 
@@ -212,25 +216,6 @@ public class Game extends PApplet {
         }
     }
   }
-
-	/**
-	 * This method is automatically called by Processing every time the user clicks a mouse button.
-	 * - The `mouseX` and `mouseY` variables are automatically is assigned the coordinates on the screen when the mouse was clicked.
-   * - The `mouseButton` variable is automatically assigned the value of either the PApplet.LEFT or PApplet.RIGHT constants, depending upon which button was pressed.
-   */
-	public void mouseClicked() {
-		System.out.println(String.format("Mouse clicked at: %d:%d.", this.mouseX, this.mouseY));
-
-	}
-
-	/**
-	 * This method is automatically called by Processing every time the user presses down and drags the mouse.
-	 * The `mouseX` and `mouseY` variables are automatically is assigned the coordinates on the screen when the mouse was clicked.
-   */
-	public void mouseDragged() {
-		System.out.println(String.format("Mouse dragging at: %d:%d.", mouseX, mouseY));
-	}
-
   /**
    * A method that can be used to modify settings of the window, such as set its size.
    * This method shouldn't really be used for anything else.  
@@ -247,7 +232,7 @@ public class Game extends PApplet {
     player = new Player(this, playerStill, playerGlide, playerRFootMove, playerLFootMove, 0, this.height-200,128,128);
     scene = "0m";
     timer = 0.0;
-
+    soundtrack.play();
   }
 
   private void updateTimer(){
