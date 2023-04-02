@@ -19,10 +19,12 @@ public class Game extends PApplet {
 
   private SoundFile soundStartup; // will refer to a sound file to play when the program first starts
   private SoundFile soundtrack;
+  private Sound adjuster;
 
   private String scene = "start";
   private PImage imgLogo;
   private PImage dirtTile;
+  private PImage fallingTile;
   private PFont eightBitFont;
   private Player player;
   private PImage playerStill;
@@ -31,7 +33,6 @@ public class Game extends PApplet {
   private PImage playerGlide;
   private ArrayList<Platform> currentScenePlatforms = new ArrayList<Platform>();
 
-  private int score = 0; // the user's score
   private boolean gameStarted = false;
   private boolean gameFinished = false;
   private double timer = 0.0;
@@ -86,6 +87,13 @@ public class Game extends PApplet {
     path = Paths.get(cwd,"images","dirtTile.png").toString();
     this.dirtTile = loadImage(path);
 
+    // load falling tile
+    path = Paths.get(cwd,"images","fallingTile.png").toString();
+    this.fallingTile = loadImage(path);
+
+    adjuster = new Sound(this);
+    adjuster.volume(0.5f);
+
     // some basic settings for when we draw shapes
     this.ellipseMode(PApplet.CENTER); // setting so ellipses radiate away from the x and y coordinates we specify.
     this.imageMode(PApplet.CENTER); // setting so the ellipse radiates away from the x and y coordinates we specify.
@@ -121,6 +129,7 @@ public class Game extends PApplet {
         for (Platform p:currentScenePlatforms){
           p.draw();
         }
+        break;
       case "100m":
         currentScenePlatforms.clear();
         levelTwo();
@@ -128,38 +137,41 @@ public class Game extends PApplet {
         for (Platform p:currentScenePlatforms){
           p.draw();
         }
-        case "200m":
+        break;
+      case "200m":
         currentScenePlatforms.clear();
         levelThree();
         this.background(0,49,82);
         for (Platform p:currentScenePlatforms){
           p.draw();
         }
-        case "300m":
+        break;
+      case "300m":
         currentScenePlatforms.clear();
         levelFour();
         this.background(0,49,82);
         for (Platform p:currentScenePlatforms){
           p.draw();
         }
-        case "400m":
+        break;
+      case "400m":
         currentScenePlatforms.clear();
         levelFive();
         this.background(0,49,82);
         for (Platform p:currentScenePlatforms){
           p.draw();
         }
-        case "495m":
+        break;
+      case "495m":
         currentScenePlatforms.clear();
         levelEnd();
         this.background(0,49,82);
         for (Platform p:currentScenePlatforms){
           p.draw();
         }
-
-        player.draw(); 
         break;
       }
+      
 
       if (isRightPressed){
         player.moveRight();
@@ -168,11 +180,16 @@ public class Game extends PApplet {
         player.moveLeft();
       }
       if (gameStarted){
+        currentScenePlatforms.remove(1);
         player.boundingBox();
         player.checkCollisions(currentScenePlatforms);
         player.processMovements();
+        player.draw();
         if (!soundtrack.isPlaying() && !soundStartup.isPlaying()){
           soundtrack.play();
+        }
+        if (player.getY() > this.height+100){
+          player.restart();
         }
 
       }
@@ -252,7 +269,7 @@ public class Game extends PApplet {
   private void startGame(){
     gameStarted = true;
     // create Player object
-    player = new Player(this, playerStill, playerGlide, playerRFootMove, playerLFootMove, 0, this.height-200,128,128);
+    player = new Player(this, playerStill, playerGlide, playerRFootMove, playerLFootMove, 0, this.height-400,128,128);
     scene = "0m";
     timer = 0.0;
   }
@@ -272,7 +289,9 @@ public class Game extends PApplet {
   }
 
   private void levelOne(){ //0m
-    currentScenePlatforms.add(new Platform(this, dirtTile, 0,750, 64, 64));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 0,600, 64, 128));
+    // bounding box debug purpose
+    // currentScenePlatforms.add(new Platform(this, dirtTile, player.getBoundingBox()[0][0],player.getBoundingBox()[0][1],player.getBoundingBox()[3][0]-player.getBoundingBox()[0][0],player.getBoundingBox()[3][1]-player.getBoundingBox()[0][1]));
   }
 
   private void levelTwo(){ //100m

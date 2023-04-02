@@ -1,5 +1,7 @@
 package edu.nyu.cs;
 
+import java.util.ArrayList;
+
 import processing.core.PApplet;
 import processing.core.PImage;
 
@@ -9,9 +11,9 @@ public class Platform {
     private PImage img; // will hold a reference to an image of the platform
     private int x; // will hold the x coordinate of this object on the screen
     private int y; // will hold the y coordinate of this object on the screen
-    
     private int width; //will hold the x dimension of the platform
     private int height; //will hold the y dimension of the platform
+    protected boolean isFallable;
 
     public Platform(Game app, PImage tile, int x, int y, int width, int height){
         this.app = app;
@@ -20,6 +22,7 @@ public class Platform {
         this.y = y;
         this.width = width;
         this.height = height;
+        this.isFallable = false;
     }
     public void draw() {
         // draw this object's image at its x and y coordinates
@@ -71,5 +74,11 @@ public class Platform {
     }
     public int getHeight(){
         return this.height;
+    }
+    public boolean getFallable(){
+        return this.isFallable;
+    }
+    public void fall(ArrayList<Platform> platforms){
+
     }
 }

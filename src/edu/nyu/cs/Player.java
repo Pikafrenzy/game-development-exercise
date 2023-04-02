@@ -22,6 +22,7 @@ public class Player {
     private int width; //will hold the width of this object
     private int height; //will hold the height of this object
     private int[][] boundingBox;
+    private int deaths;
 
     private boolean canGlide = false;
     private boolean isGliding = false;
@@ -31,17 +32,18 @@ public class Player {
     private boolean isMovingRight = false;
     private boolean isTouchingGround = false;
     private int doubleJump = 1;
-    
+    private final int LMargin = 28;
+    private final int RMargin = 40;
 
     private final int maxKeyPressInertia = 5;
     private int jumpInertia = 0;
     private int leftInertia = 0;
     private int rightInertia = 0;
 
-    private final float speed = 20;
+    private final float speed = 2;
     private final float jumpStrength = 0.75f;
     private final float gravityFall = 1f;
-    private final float gravityGlide = 0.5f;
+    private final float gravityGlide = 0.1f;
     private float xVelocity = 0;
     private float yVelocity = 0;
 
@@ -60,25 +62,25 @@ public class Player {
         this.width = width;
         this.height = height;
         boundingBox();
-
+        deaths = 0;
     }
     public void boundingBox(){
         boundingBox = new int[4][2];
 
         //top left corner
-        boundingBox[0][0] = this.x;
+        boundingBox[0][0] = this.x+LMargin;
         boundingBox[0][1] = this.y;
 
         //top right corner
-        boundingBox[1][0] = this.x+this.width;
+        boundingBox[1][0] = this.x+this.width-RMargin;
         boundingBox[1][1] = this.y;
 
         //bottom left corner
-        boundingBox[2][0] = this.x;
+        boundingBox[2][0] = this.x+LMargin;
         boundingBox[2][1] = this.y+this.height;
 
         //bottom right corner
-        boundingBox[3][0] = this.x+this.width;
+        boundingBox[3][0] = this.x+this.width-RMargin;
         boundingBox[3][1] = this.y+this.height;
     }
 
@@ -138,6 +140,7 @@ public class Player {
         else{
             doubleJump=1;
             canGlide = false;
+            isGliding = false;
         }
 
         if (isJumping){
@@ -216,50 +219,62 @@ public class Player {
         boolean colliding = false;
         for (int i = 0; i<platforms.size(); i++){
             int[][] currentWall = platforms.get(i).getRightWall();
-            //check top left player corner
-            if (boundingBox[2][1] <= currentWall[0][1] && boundingBox[2][1] >= currentWall[0][1]){
+            System.out.println(Arrays.deepToString(currentWall));
+            System.out.println(Arrays.deepToString(boundingBox));
+            //check bottom left player corner
+            if (boundingBox[2][1] >= currentWall[0][1] && boundingBox[2][1] <= currentWall[1][1]){
                 if (boundingBox[2][0]<=currentWall[0][0] && boundingBox[2][0] >= (currentWall[0][0]-platforms.get(i).getWidth())){
                     colliding = true;
                 }
             }
-            //check bottom left player corner
+            //check top left player corner
             else if (boundingBox[0][1] <= currentWall[0][1] && boundingBox[0][1] >= currentWall[1][1]){
                 if (boundingBox[0][0]<=currentWall[0][0] && boundingBox[0][0] >= (currentWall[0][0]-platforms.get(i).getWidth())){
                     colliding = true;
                 }
             }
 
-        }
-        if (colliding){
-            if(xVelocity<0){
-                setXVelocity(0);
+            if (colliding){
+                if(xVelocity<0){
+                    setXVelocity(0);
+                }
             }
         }
+
     }
     private void checkFloorCollision(ArrayList<Platform> platforms){
         boolean colliding = false;
         for (int i = 0; i<platforms.size(); i++){
             int[][] currentFloor = platforms.get(i).getFloor();
-            System.out.println(Arrays.deepToString(currentFloor));
-            System.out.println(Arrays.deepToString(boundingBox));
             //check bottom left player corner
             if (boundingBox[2][0] <= currentFloor[1][0] && boundingBox[2][0] >= currentFloor[0][0]){
-                if (boundingBox[2][1]<= currentFloor[0][1] && boundingBox[2][1] >= (currentFloor[0][1]-platforms.get(i).getHeight())){
+                if (boundingBox[2][1]>= currentFloor[0][1] && boundingBox[2][1] <= (currentFloor[0][1]+platforms.get(i).getHeight())){
                     colliding = true;
                }
             }
             //check bottom right player corner
             if (boundingBox[3][0] <= currentFloor[1][0] && boundingBox[3][0] >= currentFloor[0][0]){
-              if (boundingBox[3][1]<= currentFloor[0][1] && boundingBox[3][1] >= (currentFloor[0][1]-platforms.get(i).getHeight())){
+              if (boundingBox[3][1]>= currentFloor[0][1] && boundingBox[3][1] <= (currentFloor[0][1]+platforms.get(i).getHeight())){
                     colliding = true;
                 }
             }
 
+            //check in between 
+            //TODO: add this to the other collisions
+            if (boundingBox[2][0]<=currentFloor[0][0] && boundingBox[3][0]>=currentFloor[1][0]){
+                if (boundingBox[2][1]>= currentFloor[0][1] && boundingBox[2][1] <= (currentFloor[0][1]+platforms.get(i).getHeight())){
+                    colliding = true;
+                }
+            }
+            
             if (colliding){
                 isTouchingGround = true;
-                if (yVelocity<0){
+                if (yVelocity>=0){
                     setYVelocity(0);
                 }
+            }
+            if (platforms.get(i).getFallable()){
+                platforms.get(i).fall(platforms);
             }
             else {
                 isTouchingGround = false;
@@ -286,7 +301,7 @@ public class Player {
             }
 
             if (colliding){
-                if (yVelocity>0){
+                if (yVelocity<0){
                    setYVelocity(0);
                 }
             }
@@ -338,6 +353,15 @@ public class Player {
     public int getY(){
         return y;
     }
+    public int getWidth(){
+        return width;
+    }
+    public int getHeight(){
+        return height;
+    }
+    public int getDeaths(){
+        return deaths;
+    }
 
     public void setXVelocity(float xVelocity){
         this.xVelocity = xVelocity;
@@ -357,12 +381,17 @@ public class Player {
     public void addYVelocity(float addedYVelocity){
         this.yVelocity += addedYVelocity;
     }
+    public int[][] getBoundingBox(){
+        return boundingBox;
+    }
 
     public void restart(){
         setXVelocity(0);
         setYVelocity(0);
         setX(initX);
         setY(initY);
+        canGlide = false;
+        deaths++;
         doubleJump = 1; //TODO: remove when done coding game
     }
 }
