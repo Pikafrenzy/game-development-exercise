@@ -1,5 +1,5 @@
 package edu.nyu.cs;
-//TODO: troubleshoot start screen, design and implement levels, design falling platform
+//TODO: design and implement levels, design falling platform
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
@@ -19,7 +19,6 @@ public class Game extends PApplet {
 
   private SoundFile soundStartup; // will refer to a sound file to play when the program first starts
   private SoundFile soundtrack;
-  private PImage imgMe; // will hold a photo of me
 
   private String scene = "start";
   private PImage imgLogo;
@@ -60,11 +59,6 @@ public class Game extends PApplet {
     //load up soundtrack for the game
     path = Paths.get(cwd,"sounds","soundtrack.mp3").toString();
     this.soundtrack = new SoundFile(this,path);
-
-    // load up an image of me
-    //TODO: delete along with all other demo code
-		path = Paths.get(cwd, "images","demo","me.png").toString(); // e.g "images/me.png" on Mac/Unix vs. "images\me.png" on Windows
-    this.imgMe = loadImage(path);
 
     // load up game logo
     path = Paths.get(cwd,"images","logo.png").toString();
@@ -121,8 +115,44 @@ public class Game extends PApplet {
         fill(255,200,200);
         break;
       case "0m":
+        currentScenePlatforms.clear();
+        levelOne();
         this.background(0,49,82);
-        currentScenePlatforms.add(new Platform(this, dirtTile, 0,750, 64, 64));
+        for (Platform p:currentScenePlatforms){
+          p.draw();
+        }
+      case "100m":
+        currentScenePlatforms.clear();
+        levelTwo();
+        this.background(0,49,82);
+        for (Platform p:currentScenePlatforms){
+          p.draw();
+        }
+        case "200m":
+        currentScenePlatforms.clear();
+        levelThree();
+        this.background(0,49,82);
+        for (Platform p:currentScenePlatforms){
+          p.draw();
+        }
+        case "300m":
+        currentScenePlatforms.clear();
+        levelFour();
+        this.background(0,49,82);
+        for (Platform p:currentScenePlatforms){
+          p.draw();
+        }
+        case "400m":
+        currentScenePlatforms.clear();
+        levelFive();
+        this.background(0,49,82);
+        for (Platform p:currentScenePlatforms){
+          p.draw();
+        }
+        case "495m":
+        currentScenePlatforms.clear();
+        levelEnd();
+        this.background(0,49,82);
         for (Platform p:currentScenePlatforms){
           p.draw();
         }
@@ -241,9 +271,25 @@ public class Game extends PApplet {
     return display;
   }
 
+  private void levelOne(){ //0m
+    currentScenePlatforms.add(new Platform(this, dirtTile, 0,750, 64, 64));
+  }
 
+  private void levelTwo(){ //100m
 
+  }
+  private void levelThree(){ //200m
 
+  }
+  private void levelFour(){ //300m
+
+  }
+  private void levelFive(){ //400m
+
+  }
+  private void levelEnd(){ //495m
+
+  }
 
 
 
