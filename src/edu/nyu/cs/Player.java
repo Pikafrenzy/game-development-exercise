@@ -181,9 +181,8 @@ public class Player {
             }
 
         }
-        processVelocity();
     }
-    private void processVelocity(){
+    public void processVelocity(){
         this.setX((int)(getX()+getXVelocity()));
         this.setY((int)(getY()+getYVelocity()));
     }
