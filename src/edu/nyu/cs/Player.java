@@ -197,14 +197,14 @@ public class Player {
         for (int i = 0; i<platforms.size(); i++){
             int[][] currentWall = platforms.get(i).getLeftWall();
             //check top right player corner
-            if (boundingBox[3][1] <= currentWall[0][1] && boundingBox[3][1] >= currentWall[1][1]){
+            if (boundingBox[3][1] < currentWall[0][1] && boundingBox[3][1] > currentWall[1][1]){
                 if (boundingBox[3][0]>=currentWall[0][0] && boundingBox[3][0] <= (currentWall[0][0]+platforms.get(i).getWidth())){
                     colliding = true;
                     System.out.println("Colliding with Left Wall Case 1");
                 }
             }
             //check bottom right player corner
-            else if (boundingBox[1][1] <= currentWall[0][1] && boundingBox[1][1] >= currentWall[1][1]){
+            if (boundingBox[1][1] <= currentWall[0][1] && boundingBox[1][1] >= currentWall[1][1]){
                 if (boundingBox[1][0]>=currentWall[0][0] && boundingBox[1][0] <= (currentWall[0][0]+platforms.get(i).getWidth())){
                     colliding = true;
                     System.out.println("Colliding with Left Wall Case 2");
@@ -222,8 +222,6 @@ public class Player {
         boolean colliding = false;
         for (int i = 0; i<platforms.size(); i++){
             int[][] currentWall = platforms.get(i).getRightWall();
-            System.out.println(Arrays.deepToString(currentWall));
-            System.out.println(Arrays.deepToString(boundingBox));
             //check bottom left player corner
             if (boundingBox[2][1] > currentWall[0][1] && boundingBox[2][1] < currentWall[1][1]){
                 if (boundingBox[2][0]<=currentWall[0][0]+fudgeFactor && boundingBox[2][0] >= (currentWall[0][0]-platforms.get(i).getWidth()-fudgeFactor)){
@@ -232,7 +230,7 @@ public class Player {
                 }
             }
             //check top left player corner
-            else if (boundingBox[0][1] < currentWall[0][1] && boundingBox[0][1] > currentWall[1][1]){
+            if (boundingBox[0][1] < currentWall[0][1] && boundingBox[0][1] > currentWall[1][1]){
                 if (boundingBox[0][0]<=currentWall[0][0]+fudgeFactor && boundingBox[0][0] >= (currentWall[0][0]-platforms.get(i).getWidth()-fudgeFactor)){
                     colliding = true;
                     System.out.println("Colliding with Right Wall Case 2");
@@ -243,7 +241,7 @@ public class Player {
             if (boundingBox[2][1]>currentWall[0][1] && boundingBox[3][1]<currentWall[1][1]){
                 if (boundingBox[2][0]>= currentWall[0][0] && boundingBox[2][0] <= (currentWall[0][0]+platforms.get(i).getWidth())){
                     colliding = true;
-                    System.out.println("Colliding with Floor Case 3");
+                    System.out.println("Colliding with Right Wall Case 3");
                 }
             }
 
