@@ -179,6 +179,7 @@ public class Game extends PApplet {
         if (isLeftPressed){
           player.moveLeft();
         }
+        currentScenePlatforms.remove(1);
         player.boundingBox();
         player.checkCollisions(currentScenePlatforms);
         player.processMovements();
@@ -297,7 +298,7 @@ public class Game extends PApplet {
   private void levelOne(){ //0m
     currentScenePlatforms.add(new Platform(this, dirtTile, 0,600, 64, 128));
     // bounding box debug purpose
-    // currentScenePlatforms.add(new Platform(this, dirtTile, player.getBoundingBox()[0][0],player.getBoundingBox()[0][1],player.getBoundingBox()[3][0]-player.getBoundingBox()[0][0],player.getBoundingBox()[3][1]-player.getBoundingBox()[0][1]));
+    currentScenePlatforms.add(new Platform(this, dirtTile, player.getBoundingBox()[0][0],player.getBoundingBox()[0][1],player.getBoundingBox()[3][0]-player.getBoundingBox()[0][0],player.getBoundingBox()[3][1]-player.getBoundingBox()[0][1]));
   }
 
   private void levelTwo(){ //100m

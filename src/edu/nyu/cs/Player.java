@@ -35,6 +35,7 @@ public class Player {
     private final int LMargin = 28;
     private final int RMargin = 40;
     private final int downMargin = 4;
+    private final int fudgeFactor = 2;
 
     private final int maxKeyPressInertia = 5;
     private int jumpInertia = 0;
@@ -223,14 +224,14 @@ public class Player {
             System.out.println(Arrays.deepToString(currentWall));
             System.out.println(Arrays.deepToString(boundingBox));
             //check bottom left player corner
-            if (boundingBox[2][1] > currentWall[0][1] && boundingBox[2][1] < currentWall[1][1]){
-                if (boundingBox[2][0]<=currentWall[0][0] && boundingBox[2][0] >= (currentWall[0][0]-platforms.get(i).getWidth())){
+            if (boundingBox[2][1] >= currentWall[0][1] && boundingBox[2][1] <= currentWall[1][1]){
+                if (boundingBox[2][0]<=currentWall[0][0]+fudgeFactor && boundingBox[2][0] >= (currentWall[0][0]-platforms.get(i).getWidth()-fudgeFactor)){
                     colliding = true;
                 }
             }
             //check top left player corner
             else if (boundingBox[0][1] < currentWall[0][1] && boundingBox[0][1] > currentWall[1][1]){
-                if (boundingBox[0][0]<=currentWall[0][0] && boundingBox[0][0] >= (currentWall[0][0]-platforms.get(i).getWidth())){
+                if (boundingBox[0][0]<=currentWall[0][0]+fudgeFactor && boundingBox[0][0] >= (currentWall[0][0]-platforms.get(i).getWidth()-fudgeFactor)){
                     colliding = true;
                 }
             }
@@ -345,12 +346,14 @@ public class Player {
     }
     public void setX(int x){
         this.x = x;
+        boundingBox();
     }
     public int getX(){
         return x;
     }
     public void setY(int y){
         this.y = y;
+        boundingBox();
     }
     public int getY(){
         return y;
