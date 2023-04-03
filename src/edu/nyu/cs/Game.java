@@ -218,16 +218,24 @@ public class Game extends PApplet {
             }
             break;
           case 'c':
-            player.jump();
+            if(gameStarted){
+              player.jump();
+            }
             break;
           case 'x':
-            player.doubleJump();
+            if(gameStarted){
+              player.doubleJump();
+            }
             break;
           case 'z':
-            player.glide();
+            if(gameStarted){
+              player.glide();
+            }
             break;
           case 'r':
-            player.restart();
+            if(gameStarted){
+              player.restart();
+            }
             break;
           case '`': //TODO: remove this debug feature
             System.exit(0); //for temporary testing 
