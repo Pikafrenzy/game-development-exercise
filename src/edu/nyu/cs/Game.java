@@ -187,9 +187,9 @@ public class Game extends PApplet {
         }
         currentScenePlatforms.remove(1);
         player.boundingBox();
-        player.processInputs();
-        player.checkCollisions(currentScenePlatforms);
         player.processVelocity();
+        player.checkCollisions(currentScenePlatforms);
+        player.changePlayerPosition();
         player.draw();
         if (!soundtrack.isPlaying() && !soundStartup.isPlaying()){
           soundtrack.play();

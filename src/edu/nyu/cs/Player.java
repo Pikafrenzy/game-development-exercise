@@ -129,7 +129,7 @@ public class Player {
             canGlide = true;
         }
     }
-    public void processInputs(){
+    public void processVelocity(){
         if (!isTouchingGround){
             fall();
             if (isFalling){
@@ -182,7 +182,7 @@ public class Player {
 
         }
     }
-    public void processVelocity(){
+    public void changePlayerPosition(){
         this.setX((int)(getX()+getXVelocity()));
         this.setY((int)(getY()+getYVelocity()));
     }
@@ -225,7 +225,7 @@ public class Player {
             System.out.println(Arrays.deepToString(currentWall));
             System.out.println(Arrays.deepToString(boundingBox));
             //check bottom left player corner
-            if (boundingBox[2][1] >= currentWall[0][1] && boundingBox[2][1] <= currentWall[1][1]){
+            if (boundingBox[2][1] > currentWall[0][1] && boundingBox[2][1] < currentWall[1][1]){
                 if (boundingBox[2][0]<=currentWall[0][0]+fudgeFactor && boundingBox[2][0] >= (currentWall[0][0]-platforms.get(i).getWidth()-fudgeFactor)){
                     colliding = true;
                     System.out.println("Colliding with Right Wall Case 1");
@@ -236,6 +236,14 @@ public class Player {
                 if (boundingBox[0][0]<=currentWall[0][0]+fudgeFactor && boundingBox[0][0] >= (currentWall[0][0]-platforms.get(i).getWidth()-fudgeFactor)){
                     colliding = true;
                     System.out.println("Colliding with Right Wall Case 2");
+                }
+            }
+            //check in between 
+            //TODO: add this to the other collisions
+            if (boundingBox[2][1]>currentWall[0][1] && boundingBox[3][1]<currentWall[1][1]){
+                if (boundingBox[2][0]>= currentWall[0][0] && boundingBox[2][0] <= (currentWall[0][0]+platforms.get(i).getWidth())){
+                    colliding = true;
+                    System.out.println("Colliding with Floor Case 3");
                 }
             }
 
