@@ -171,16 +171,14 @@ public class Game extends PApplet {
         }
         break;
       }
-      
 
-      if (isRightPressed){
-        player.moveRight();
-      }
-      if (isLeftPressed){
-        player.moveLeft();
-      }
       if (gameStarted){
-        currentScenePlatforms.remove(1);
+        if (isRightPressed){
+          player.moveRight();
+        }
+        if (isLeftPressed){
+          player.moveLeft();
+        }
         player.boundingBox();
         player.checkCollisions(currentScenePlatforms);
         player.processMovements();

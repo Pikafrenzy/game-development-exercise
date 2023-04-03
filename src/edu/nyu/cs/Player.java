@@ -34,6 +34,7 @@ public class Player {
     private int doubleJump = 1;
     private final int LMargin = 28;
     private final int RMargin = 40;
+    private final int downMargin = 4;
 
     private final int maxKeyPressInertia = 5;
     private int jumpInertia = 0;
@@ -77,11 +78,11 @@ public class Player {
 
         //bottom left corner
         boundingBox[2][0] = this.x+LMargin;
-        boundingBox[2][1] = this.y+this.height;
+        boundingBox[2][1] = this.y+this.height-downMargin;
 
         //bottom right corner
         boundingBox[3][0] = this.x+this.width-RMargin;
-        boundingBox[3][1] = this.y+this.height;
+        boundingBox[3][1] = this.y+this.height-downMargin;
     }
 
     public void jump(){ 
@@ -222,13 +223,13 @@ public class Player {
             System.out.println(Arrays.deepToString(currentWall));
             System.out.println(Arrays.deepToString(boundingBox));
             //check bottom left player corner
-            if (boundingBox[2][1] >= currentWall[0][1] && boundingBox[2][1] <= currentWall[1][1]){
+            if (boundingBox[2][1] > currentWall[0][1] && boundingBox[2][1] < currentWall[1][1]){
                 if (boundingBox[2][0]<=currentWall[0][0] && boundingBox[2][0] >= (currentWall[0][0]-platforms.get(i).getWidth())){
                     colliding = true;
                 }
             }
             //check top left player corner
-            else if (boundingBox[0][1] <= currentWall[0][1] && boundingBox[0][1] >= currentWall[1][1]){
+            else if (boundingBox[0][1] < currentWall[0][1] && boundingBox[0][1] > currentWall[1][1]){
                 if (boundingBox[0][0]<=currentWall[0][0] && boundingBox[0][0] >= (currentWall[0][0]-platforms.get(i).getWidth())){
                     colliding = true;
                 }
@@ -270,11 +271,12 @@ public class Player {
             if (colliding){
                 isTouchingGround = true;
                 if (yVelocity>=0){
+                    setY(currentFloor[0][1]-this.height+this.downMargin);
                     setYVelocity(0);
                 }
-            }
-            if (platforms.get(i).getFallable()){
-                platforms.get(i).fall(platforms);
+                if (platforms.get(i).getFallable()){
+                    platforms.get(i).fall(platforms);
+                }
             }
             else {
                 isTouchingGround = false;

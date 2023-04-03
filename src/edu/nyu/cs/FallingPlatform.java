@@ -11,7 +11,7 @@ public class FallingPlatform extends Platform{
         this.isFallable = true;
     }
     public void fall(ArrayList<Platform> platforms){
-        
-                platforms.remove(this);
+        //TODO: animate
+        platforms.remove(this);
     }
 }
