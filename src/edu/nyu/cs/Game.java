@@ -34,10 +34,11 @@ public class Game extends PApplet {
   private PImage playerGlide;
   private ArrayList<Platform> currentScenePlatforms = new ArrayList<Platform>();
 
+  private boolean instructionsShowing = false;
   private boolean gameStarted = false;
   private boolean gameFinished = false;
   private double timer = 0.0;
-  private String displayTime;
+  private int instructionTimer = 0;
 
   private boolean isRightPressed = false;
   private boolean isLeftPressed = false;
@@ -112,6 +113,14 @@ public class Game extends PApplet {
    * - There are methods for drawing various shapes, including `ellipse()`, `circle()`, `rect()`, `square()`, `triangle()`, `line()`, `point()`, etc.
 	 */
 	public void draw() {
+    checkLevelWin();
+    if (instructionsShowing){
+      instructionTimer++;
+      if (instructionTimer >=180){
+        startGame();
+        instructionsShowing = false;
+      }
+    }
     switch(scene){
       case "start":
         if (notPlayedStart){
@@ -128,10 +137,18 @@ public class Game extends PApplet {
         text(startString, this.width/2, this.height-50);
         fill(255,200,200);
         break;
+      case "instructions":
+        currentScenePlatforms.clear();
+        this.background(0, 49, 82);
+        textSize(25);
+        String help = "Press LEFTARROW to move left. \n Press RIGHTARROW to move right. \n Press Z to glide. \n Press X to double -jump. \n Press C to jump. \n Press R to restart level.";
+        text(help, this.width/2, 100);
+        fill(255,255,255);
+        break;
       case "0m":
         currentScenePlatforms.clear();
         levelOne();
-        this.background(0,49,82);
+        this.background(160,82,45);
         for (Platform p:currentScenePlatforms){
           p.draw();
         }
@@ -139,7 +156,7 @@ public class Game extends PApplet {
       case "100m":
         currentScenePlatforms.clear();
         levelTwo();
-        this.background(0,49,82);
+        this.background(160,82,45);
         for (Platform p:currentScenePlatforms){
           p.draw();
         }
@@ -147,7 +164,7 @@ public class Game extends PApplet {
       case "200m":
         currentScenePlatforms.clear();
         levelThree();
-        this.background(0,49,82);
+        this.background(160,82,45);
         for (Platform p:currentScenePlatforms){
           p.draw();
         }
@@ -155,7 +172,7 @@ public class Game extends PApplet {
       case "300m":
         currentScenePlatforms.clear();
         levelFour();
-        this.background(0,49,82);
+        this.background(160,82,45);
         for (Platform p:currentScenePlatforms){
           p.draw();
         }
@@ -163,7 +180,7 @@ public class Game extends PApplet {
       case "400m":
         currentScenePlatforms.clear();
         levelFive();
-        this.background(0,49,82);
+        this.background(160,82,45);
         for (Platform p:currentScenePlatforms){
           p.draw();
         }
@@ -171,7 +188,7 @@ public class Game extends PApplet {
       case "495m":
         currentScenePlatforms.clear();
         levelEnd();
-        this.background(0,49,82);
+        this.background(160,82,45);
         for (Platform p:currentScenePlatforms){
           p.draw();
         }
@@ -185,7 +202,6 @@ public class Game extends PApplet {
         if (isLeftPressed){
           player.moveLeft();
         }
-        currentScenePlatforms.remove(1);
         player.boundingBox();
         player.processVelocity();
         player.checkCollisions(currentScenePlatforms);
@@ -197,10 +213,11 @@ public class Game extends PApplet {
         if (player.getY() > this.height+100){
           player.restart();
         }
-
+        deathCounter(player.getDeaths());
+        updateTimer();
+        displayTimer(getTimerDisplayValue());
+        printLevel();
       }
-      updateTimer();
-      displayTime = getTimerDisplayValue();
 	}
 
 	/**
@@ -222,7 +239,7 @@ public class Game extends PApplet {
         switch(this.key){
           case ' ':
             if (!gameStarted){
-              startGame();
+              instruct();
             }
             break;
           case 'c':
@@ -244,9 +261,6 @@ public class Game extends PApplet {
             if(gameStarted){
               player.restart();
             }
-            break;
-          case '`': //TODO: remove this debug feature
-            System.exit(0); //for temporary testing 
             break;
         }
     }
@@ -283,14 +297,18 @@ public class Game extends PApplet {
   private void startGame(){
     gameStarted = true;
     // create Player object
-    player = new Player(this, playerStill, playerGlide, playerRFootMove, playerLFootMove, 0, this.height-400,128,128);
+    player = new Player(this, playerStill, playerGlide, playerRFootMove, playerLFootMove, 50, this.height-250,128,128);
     scene = "0m";
     timer = 0.0;
   }
 
+  private void instruct(){
+    instructionsShowing = true;
+    scene = "instructions";
+  }
   private void updateTimer(){
     if (gameStarted && !gameFinished){
-      this.timer += (1/60);
+      this.timer += (1.0/60);
     }
   }
   private String getTimerDisplayValue(){
@@ -303,22 +321,75 @@ public class Game extends PApplet {
   }
 
   private void levelOne(){ //0m
-    currentScenePlatforms.add(new Platform(this, dirtTile, 20,600, 128, 128));
-    // bounding box debug purpose
-    currentScenePlatforms.add(new Platform(this, dirtTile, player.getBoundingBox()[0][0],player.getBoundingBox()[0][1],player.getBoundingBox()[3][0]-player.getBoundingBox()[0][0],player.getBoundingBox()[3][1]-player.getBoundingBox()[0][1]));
-  }
+    //ceiling
+    currentScenePlatforms.add(new Platform(this, dirtTile, 0,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 128,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 256,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 384,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 512,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 640,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 768,0,128,128));
 
+    // jumping platforms
+    currentScenePlatforms.add(new Platform(this, dirtTile, 50,600, 128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 350, 550, 128, 128));
+    currentScenePlatforms.add(new Platform(this, dirtTile,700,400,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile,this.width-128, 300, 128, 128));
+  }
   private void levelTwo(){ //100m
+    //ceiling
+    currentScenePlatforms.add(new Platform(this, dirtTile, 0,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 128,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 256,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 384,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 512,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 640,0,128,128));
 
-  }
+    // jumping platforms
+    currentScenePlatforms.add(new Platform(this, dirtTile, 50,600, 128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, this.width-128,700,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, this.width-104,572,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile,800,400,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 776,272,128,128));
+    }
   private void levelThree(){ //200m
+    //ceiling
+    currentScenePlatforms.add(new Platform(this, dirtTile, 0,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 128,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 256,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 384,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 512,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 640,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 768,0,128,128));
 
+    // jumping platforms
+    currentScenePlatforms.add(new Platform(this, dirtTile, 50,600, 128,128));
   }
   private void levelFour(){ //300m
+    //ceiling
+    currentScenePlatforms.add(new Platform(this, dirtTile, 0,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 128,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 256,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 384,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 512,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 640,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 768,0,128,128));
 
+    // jumping platforms
+    currentScenePlatforms.add(new Platform(this, dirtTile, 50,600, 128,128));
   }
   private void levelFive(){ //400m
+    //ceiling
+    currentScenePlatforms.add(new Platform(this, dirtTile, 0,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 128,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 256,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 384,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 512,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 640,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 768,0,128,128));
 
+    // jumping platforms
+    currentScenePlatforms.add(new Platform(this, dirtTile, 50,600, 128,128));
   }
   private void levelEnd(){ //495m
 
@@ -326,6 +397,57 @@ public class Game extends PApplet {
 
   public PImage missingTile(){
     return missingTile;
+  }
+  private void deathCounter(int deaths){
+    textSize(25);
+    String deathString = "Deaths: "+deaths;
+    text(deathString, 96, 30);
+    fill(255,255,255);
+  }
+  private void displayTimer(String displayTime){
+    textSize(25);
+    textMode(CORNER);
+    text("Timer is at " +displayTime,128,60);
+    fill(255,255,255);
+    textMode(CENTER);
+  }
+  private void printLevel(){
+    textSize(50);
+    text(scene,600,100);
+    fill(255,255,255);
+  }
+  private void checkLevelWin(){
+    if (gameStarted){
+      if (player.getY()<=0){
+        switch(scene){
+          case "0m":
+            this.scene = "100m";
+            player.setX(player.getInitX());
+            player.setY(player.getInitY());
+            break;
+          case "100m":
+            this.scene = "200m";
+            player.setX(player.getInitX());
+            player.setY(player.getInitY());
+            break;
+          case "200m":
+            this.scene = "300m";
+            player.setX(player.getInitX());
+            player.setY(player.getInitY());
+            break;
+          case "300m":
+            this.scene = "400m";
+            player.setX(player.getInitX());
+            player.setY(player.getInitY());
+            break;
+          case "400m":
+            this.scene = "495m";
+            player.setX(player.getInitX());
+            player.setY(player.getInitY());
+            break;
+        }
+      }
+    }
   }
 
 

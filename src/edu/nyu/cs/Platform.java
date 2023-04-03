@@ -7,12 +7,12 @@ import processing.core.PImage;
 
 public class Platform {
     // instance properties
-    private Game app; // will hold a reference to the main Game object
-    private PImage img; // will hold a reference to an image of the platform
-    private int x; // will hold the x coordinate of this object on the screen
-    private int y; // will hold the y coordinate of this object on the screen
-    private int width; //will hold the x dimension of the platform
-    private int height; //will hold the y dimension of the platform
+    protected Game app; // will hold a reference to the main Game object
+    protected PImage img; // will hold a reference to an image of the platform
+    protected int x; // will hold the x coordinate of this object on the screen
+    protected int y; // will hold the y coordinate of this object on the screen
+    protected int width; //will hold the x dimension of the platform
+    protected int height; //will hold the y dimension of the platform
     protected boolean isFallable;
 
     public Platform(Game app, int x, int y, int width, int height){
@@ -44,7 +44,10 @@ public class Platform {
         this.isFallable = false;
     }
 
-
+    public String toString(){
+        String output = "This is a Platform! Top left corner is "+this.x+", "+this.y+", bottom right corner is "+(this.x+this.width)+", "+(this.y+this.height)+".";
+        return output;
+    }
     public void draw() {
         // draw this object's image at its x and y coordinates
         this.app.imageMode(PApplet.CORNER); // setting so the image is drawn centered on the specified x and y coordinates
@@ -99,7 +102,13 @@ public class Platform {
     public boolean getFallable(){
         return this.isFallable;
     }
-    public void fall(ArrayList<Platform> platforms){
+    public int getY(){
+        return this.y;
+    }
+    public void setY(int y){
+        this.y = y;
+    }
+    public void fall(){
 
     }
 }

@@ -42,8 +42,8 @@ public class Player {
     private int leftInertia = 0;
     private int rightInertia = 0;
 
-    private final float speed = 2;
-    private final float jumpStrength = 0.75f;
+    private final float speed = 8;
+    private final float jumpStrength = 1f;
     private final float gravityFall = 1f;
     private final float gravityGlide = 0.1f;
     private float xVelocity = 0;
@@ -95,6 +95,7 @@ public class Player {
     }
     public void doubleJump(){
         if (doubleJump>0){
+            setYVelocity(0);
             isJumping = true;
             doubleJump--;
             jumpInertia = 0;
@@ -136,7 +137,12 @@ public class Player {
                 this.addYVelocity(gravityFall);
             }
             else if (isGliding){
-                this.addYVelocity(gravityGlide);
+                if (this.getYVelocity()>0){
+                    this.addYVelocity(gravityGlide);
+                }
+                else {
+                    this.addYVelocity(gravityFall);
+                }
             }
         }
         else{
@@ -192,54 +198,61 @@ public class Player {
         checkFloorCollision(platforms);
         checkCeilingCollision(platforms);
     }
-    private void checkLeftWallCollision(ArrayList<Platform> platforms){ //checks collision to the right of the player
-        boolean colliding = false;
+    private void checkLeftWallCollision(ArrayList<Platform> platforms){
         for (int i = 0; i<platforms.size(); i++){
+            boolean colliding = false;
             int[][] currentWall = platforms.get(i).getLeftWall();
-            //check top right player corner
-            if (boundingBox[3][1] < currentWall[0][1] && boundingBox[3][1] > currentWall[1][1]){
-                if (boundingBox[3][0]>=currentWall[0][0] && boundingBox[3][0] <= (currentWall[0][0]+platforms.get(i).getWidth())){
+            //check bottom right player corner
+            if (boundingBox[3][1] > currentWall[0][1] && boundingBox[3][1] < currentWall[1][1]){
+                if (boundingBox[3][0]>= currentWall[0][0] - fudgeFactor && boundingBox[3][0] <= (currentWall[0][0]+platforms.get(i).getWidth()+fudgeFactor)){
                     colliding = true;
                     System.out.println("Colliding with Left Wall Case 1");
                 }
             }
-            //check bottom right player corner
-            if (boundingBox[1][1] <= currentWall[0][1] && boundingBox[1][1] >= currentWall[1][1]){
-                if (boundingBox[1][0]>=currentWall[0][0] && boundingBox[1][0] <= (currentWall[0][0]+platforms.get(i).getWidth())){
+            //check top right player corner
+            if (boundingBox[1][1] > currentWall[0][1] && boundingBox[1][1] < currentWall[1][1]){
+                if (boundingBox[1][0] >= currentWall[0][0] - fudgeFactor && boundingBox[1][0] <= (currentWall[0][0]+platforms.get(i).getWidth()+fudgeFactor)){
                     colliding = true;
                     System.out.println("Colliding with Left Wall Case 2");
                 }
             }
+            //check in between 
+            if (boundingBox[3][1]>currentWall[0][1] && boundingBox[3][1]<currentWall[1][1]){
+                if (boundingBox[2][0]>= currentWall[0][0] && boundingBox[2][0] <= (currentWall[0][0]+platforms.get(i).getWidth())){
+                    colliding = true;
+                    System.out.println("Colliding with Left Wall Case 3");
+                }
+            }
 
-        }
-        if (colliding){
-            if(xVelocity>0){
-                setXVelocity(0);
+            if (colliding){
+                if(xVelocity>0){
+                    setXVelocity(0);
+                }
             }
         }
+
     }
     private void checkRightWallCollision(ArrayList<Platform> platforms){
-        boolean colliding = false;
         for (int i = 0; i<platforms.size(); i++){
+            boolean colliding = false;
             int[][] currentWall = platforms.get(i).getRightWall();
             //check bottom left player corner
             if (boundingBox[2][1] > currentWall[0][1] && boundingBox[2][1] < currentWall[1][1]){
-                if (boundingBox[2][0]<=currentWall[0][0]+fudgeFactor && boundingBox[2][0] >= (currentWall[0][0]-platforms.get(i).getWidth()-fudgeFactor)){
+                if (boundingBox[2][0]<=currentWall[0][0]&& boundingBox[2][0] >= (currentWall[0][0]-platforms.get(i).getWidth())){
                     colliding = true;
                     System.out.println("Colliding with Right Wall Case 1");
                 }
             }
             //check top left player corner
             if (boundingBox[0][1] < currentWall[0][1] && boundingBox[0][1] > currentWall[1][1]){
-                if (boundingBox[0][0]<=currentWall[0][0]+fudgeFactor && boundingBox[0][0] >= (currentWall[0][0]-platforms.get(i).getWidth()-fudgeFactor)){
+                if (boundingBox[0][0]<=currentWall[0][0] && boundingBox[0][0] >= (currentWall[0][0]-platforms.get(i).getWidth())){
                     colliding = true;
                     System.out.println("Colliding with Right Wall Case 2");
                 }
             }
             //check in between 
-            //TODO: add this to the other collisions
-            if (boundingBox[2][1]>currentWall[0][1] && boundingBox[3][1]<currentWall[1][1]){
-                if (boundingBox[2][0]>= currentWall[0][0] && boundingBox[2][0] <= (currentWall[0][0]+platforms.get(i).getWidth())){
+            if (boundingBox[2][1] > currentWall[0][1] && boundingBox[0][1] < currentWall[1][1]){
+                if (boundingBox[2][0]<= currentWall[0][0] && boundingBox[2][0] >= (currentWall[0][0]-platforms.get(i).getWidth())){
                     colliding = true;
                     System.out.println("Colliding with Right Wall Case 3");
                 }
@@ -254,18 +267,19 @@ public class Player {
 
     }
     private void checkFloorCollision(ArrayList<Platform> platforms){
-        boolean colliding = false;
+        boolean touchingAnyGround = false;
         for (int i = 0; i<platforms.size(); i++){
+            boolean colliding = false;
             int[][] currentFloor = platforms.get(i).getFloor();
             //check bottom left player corner
-            if (boundingBox[2][0] <= currentFloor[1][0] && boundingBox[2][0] >= currentFloor[0][0]){
+            if (boundingBox[2][0] < currentFloor[1][0]-fudgeFactor && boundingBox[2][0] > currentFloor[0][0]+fudgeFactor){
                 if (boundingBox[2][1]>= currentFloor[0][1] && boundingBox[2][1] <= (currentFloor[0][1]+platforms.get(i).getHeight())){
                     colliding = true;
                     System.out.println("Colliding with Floor Case 1");
                }
             }
             //check bottom right player corner
-            if (boundingBox[3][0] <= currentFloor[1][0] && boundingBox[3][0] >= currentFloor[0][0]){
+            if (boundingBox[3][0] < currentFloor[1][0]-fudgeFactor && boundingBox[3][0] > currentFloor[0][0]+fudgeFactor){
               if (boundingBox[3][1]>= currentFloor[0][1] && boundingBox[3][1] <= (currentFloor[0][1]+platforms.get(i).getHeight())){
                     colliding = true;
                     System.out.println("Colliding with Floor Case 2");
@@ -273,8 +287,7 @@ public class Player {
             }
 
             //check in between 
-            //TODO: add this to the other collisions
-            if (boundingBox[2][0]>=currentFloor[0][0] && boundingBox[3][0]<=currentFloor[1][0]){
+            if (boundingBox[2][0]> currentFloor[0][0] && boundingBox[3][0]< currentFloor[1][0]){
                 if (boundingBox[2][1]>= currentFloor[0][1] && boundingBox[2][1] <= (currentFloor[0][1]+platforms.get(i).getHeight())){
                     colliding = true;
                     System.out.println("Colliding with Floor Case 3");
@@ -282,38 +295,46 @@ public class Player {
             }
             
             if (colliding){
+                touchingAnyGround = true;
                 isTouchingGround = true;
                 if (yVelocity>=0){
                     setY(currentFloor[0][1]-this.height+this.downMargin);
                     setYVelocity(0);
                 }
                 if (platforms.get(i).getFallable()){
-                    platforms.get(i).fall(platforms);
+                    platforms.get(i).fall();
                 }
             }
-            else {
-                isTouchingGround = false;
-            }
+        }
+        if (!touchingAnyGround){
+            isTouchingGround = false;
         }
 
     }
     private void checkCeilingCollision(ArrayList<Platform> platforms){
-        boolean colliding = false;
         for (int i = 0; i<platforms.size(); i++){
+            boolean colliding = false;
             int[][] currentCeiling = platforms.get(i).getCeiling();
             //check top left player corner
-            if (boundingBox[0][0] <= currentCeiling[1][0] && boundingBox[0][0] >= currentCeiling[0][0]){
-                if (boundingBox[0][1]>= currentCeiling[0][1] && boundingBox[0][1] <= (currentCeiling[0][1]+platforms.get(i).getHeight())){
+            if (boundingBox[0][0] <= currentCeiling[1][0]-2*fudgeFactor && boundingBox[0][0] >= currentCeiling[0][0]+2*fudgeFactor){
+                if (boundingBox[0][1]<= currentCeiling[0][1] && boundingBox[0][1] >= (currentCeiling[0][1]-platforms.get(i).getHeight())){
                     colliding = true;
                     System.out.println("Colliding with Ceiling Case 1");
                 }
             }
             
             //check top right player corner
-            if (boundingBox[1][0] <= currentCeiling[1][0] && boundingBox[1][0] >= currentCeiling[0][0]){
-                if (boundingBox[1][1]>= currentCeiling[0][1] && boundingBox[1][1] <= (currentCeiling[0][1]+platforms.get(i).getHeight())){
+            if (boundingBox[1][0] <= currentCeiling[1][0]-2*fudgeFactor && boundingBox[1][0] >= currentCeiling[0][0]+2*fudgeFactor){
+                if (boundingBox[1][1]<= currentCeiling[0][1] && boundingBox[1][1] >= (currentCeiling[0][1]-platforms.get(i).getHeight())){
                     colliding = true;
                     System.out.println("Colliding with Ceiling Case 2");
+                }
+            }
+            //check in between 
+            if (boundingBox[0][0]>=currentCeiling[0][0] && boundingBox[1][0]<=currentCeiling[1][0]){
+                if (boundingBox[0][1]>= currentCeiling[0][1] && boundingBox[1][1] <= (currentCeiling[0][1]-platforms.get(i).getHeight())){
+                                colliding = true;
+                                System.out.println("Colliding with Floor Case 3");
                 }
             }
 
@@ -402,6 +423,12 @@ public class Player {
     }
     public int[][] getBoundingBox(){
         return boundingBox;
+    }
+    public int getInitX(){
+        return initX;
+    }
+    public int getInitY(){
+        return initY;
     }
 
     public void restart(){
