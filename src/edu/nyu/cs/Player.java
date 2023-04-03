@@ -129,7 +129,7 @@ public class Player {
             canGlide = true;
         }
     }
-    public void processMovements(){
+    public void processInputs(){
         if (!isTouchingGround){
             fall();
             if (isFalling){

@@ -187,7 +187,7 @@ public class Game extends PApplet {
         }
         currentScenePlatforms.remove(1);
         player.boundingBox();
-        player.processMovements();
+        player.processInputs();
         player.checkCollisions(currentScenePlatforms);
         player.processVelocity();
         player.draw();
