@@ -15,6 +15,16 @@ public class Platform {
     private int height; //will hold the y dimension of the platform
     protected boolean isFallable;
 
+    public Platform(Game app, int x, int y, int width, int height){
+        this.app = app;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.isFallable = false;
+        this.img = app.missingTile();
+
+    }
     public Platform(Game app, PImage tile, int x, int y, int width, int height){
         this.app = app;
         this.img = tile;
@@ -24,6 +34,17 @@ public class Platform {
         this.height = height;
         this.isFallable = false;
     }
+    public Platform(Game app, PImage tile, int x, int y){
+        this.app = app;
+        this.img = tile;
+        this.x = x;
+        this.y = y;
+        this.width = 64;
+        this.height = 64;
+        this.isFallable = false;
+    }
+
+
     public void draw() {
         // draw this object's image at its x and y coordinates
         this.app.imageMode(PApplet.CORNER); // setting so the image is drawn centered on the specified x and y coordinates

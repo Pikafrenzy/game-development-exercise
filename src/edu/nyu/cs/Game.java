@@ -25,6 +25,7 @@ public class Game extends PApplet {
   private PImage imgLogo;
   private PImage dirtTile;
   private PImage fallingTile;
+  private PImage missingTile;
   private PFont eightBitFont;
   private Player player;
   private PImage playerStill;
@@ -90,6 +91,11 @@ public class Game extends PApplet {
     // load falling tile
     path = Paths.get(cwd,"images","fallingTile.png").toString();
     this.fallingTile = loadImage(path);
+  
+    // load missing tile
+    path = Paths.get(cwd,"images","missingTile.png").toString();
+    this.missingTile = loadImage(path);
+
 
     adjuster = new Sound(this);
     adjuster.volume(0.5f);
@@ -317,7 +323,9 @@ public class Game extends PApplet {
 
   }
 
-
+  public PImage missingTile(){
+    return missingTile;
+  }
 
 
 
