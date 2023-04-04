@@ -111,4 +111,7 @@ public class Platform {
     public void fall(){
 
     }
+    public boolean getRemovalStatus(){
+        return false;
+    }
 }

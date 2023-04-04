@@ -435,6 +435,9 @@ public class Player {
     public int getInitY(){
         return initY;
     }
+    public void setDeaths(int deaths){
+        this.deaths = deaths;
+    }
 
     public void restart(){
         setXVelocity(0);

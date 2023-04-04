@@ -7,7 +7,8 @@ import java.util.ArrayList;
 public class FallingPlatform extends Platform{
     private boolean triggered = false;
     private int timer = 0;
-    
+    private boolean shouldRemove = false;
+
     public FallingPlatform(Game app,PImage tile, int x, int y, int width, int height){
         super(app, tile, x, y, width, height);
         this.isFallable = true;
@@ -19,12 +20,15 @@ public class FallingPlatform extends Platform{
         // draw this object's image at its x and y coordinates
         this.app.imageMode(PApplet.CORNER); // setting so the image is drawn centered on the specified x and y coordinates
         if(triggered){
-            this.setY(getY()+10);
+            this.setY(getY()+5);
             timer++;
         }
         this.app.image(this.img, this.x, this.y, this.width, this.height);
         if (timer >= 20){
-
+            shouldRemove = true;
         }
+    }
+    public boolean getRemovalStatus(){
+        return shouldRemove;
     }
 }
