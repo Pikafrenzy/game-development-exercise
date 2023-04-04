@@ -244,18 +244,13 @@ public class Game extends PApplet {
         gameFinished = true;
         currentScenePlatforms.clear();
         levelEnd();
-        this.background(160,82,45);
-        remove = new ArrayList<Integer>();
-        for (int i = 0; i<currentScenePlatforms.size();i++){
-          Platform p = currentScenePlatforms.get(i);
-          p.draw();
-          if (p.getRemovalStatus()){
-            remove.add(i);
-          }
-        }
-        for (int i = 0; i<remove.size();i++){
-          currentScenePlatforms.remove(currentScenePlatforms.get(remove.get(i)));
-        }
+        this.background(0, 49, 82);
+        textSize(80);
+        text("THE END",this.width/2, this.height/2);
+        fill(255,0,0);
+        textSize(81);
+        text("THE END",this.width/2, this.height/2);
+        fill(255,200,200);
         break;
       }
       if (gameStarted){
