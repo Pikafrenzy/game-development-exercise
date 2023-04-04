@@ -3,6 +3,7 @@ package edu.nyu.cs;
 import processing.core.PApplet;
 import processing.core.PImage;
 
+import java.lang.management.PlatformLoggingMXBean;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +25,7 @@ public class Player {
     private int[][] boundingBox;
     private int deaths;
 
+    private boolean isBumpingLeft = false;
     private boolean canGlide = false;
     private boolean isGliding = false;
     private boolean isFalling = false;
@@ -32,10 +34,11 @@ public class Player {
     private boolean isMovingRight = false;
     private boolean isTouchingGround = false;
     private int doubleJump = 1;
+    private ArrayList<Platform> workingPlatforms =  new ArrayList<Platform>();
     private final int LMargin = 28;
     private final int RMargin = 40;
     private final int downMargin = 4;
-    private final int fudgeFactor = 2;
+    private final int fudgeFactor = 4;
 
     private final int maxKeyPressInertia = 5;
     private int jumpInertia = 0;
@@ -193,44 +196,46 @@ public class Player {
         this.setY((int)(getY()+getYVelocity()));
     }
     public void checkCollisions(ArrayList<Platform> platforms){
-        checkLeftWallCollision(platforms);
         checkRightWallCollision(platforms);
+        checkLeftWallCollision(platforms);
         checkFloorCollision(platforms);
         checkCeilingCollision(platforms);
+        workingPlatforms.clear();
     }
     private void checkLeftWallCollision(ArrayList<Platform> platforms){
         for (int i = 0; i<platforms.size(); i++){
+            if(workingPlatforms.contains(platforms.get(i))){
+                continue;
+            }
             boolean colliding = false;
             int[][] currentWall = platforms.get(i).getLeftWall();
             //check bottom right player corner
             if (boundingBox[3][1] > currentWall[0][1] && boundingBox[3][1] < currentWall[1][1]){
-                if (boundingBox[3][0]>= currentWall[0][0] - fudgeFactor && boundingBox[3][0] <= (currentWall[0][0]+platforms.get(i).getWidth()+fudgeFactor)){
+                if (boundingBox[3][0]> currentWall[0][0] - fudgeFactor && boundingBox[3][0] < (currentWall[0][0]+platforms.get(i).getWidth()+fudgeFactor)){
                     colliding = true;
                     System.out.println("Colliding with Left Wall Case 1");
                 }
             }
             //check top right player corner
             if (boundingBox[1][1] > currentWall[0][1] && boundingBox[1][1] < currentWall[1][1]){
-                if (boundingBox[1][0] >= currentWall[0][0] - fudgeFactor && boundingBox[1][0] <= (currentWall[0][0]+platforms.get(i).getWidth()+fudgeFactor)){
+                if (boundingBox[1][0] > currentWall[0][0] - fudgeFactor && boundingBox[1][0] < (currentWall[0][0]+platforms.get(i).getWidth()+fudgeFactor)){
                     colliding = true;
                     System.out.println("Colliding with Left Wall Case 2");
                 }
             }
             //check in between 
             if (boundingBox[3][1]>currentWall[0][1] && boundingBox[3][1]<currentWall[1][1]){
-                if (boundingBox[2][0]>= currentWall[0][0] && boundingBox[2][0] <= (currentWall[0][0]+platforms.get(i).getWidth())){
+                if (boundingBox[2][0]> currentWall[0][0] && boundingBox[2][0] < (currentWall[0][0]+platforms.get(i).getWidth())){
                     colliding = true;
                     System.out.println("Colliding with Left Wall Case 3");
                 }
             }
-
             if (colliding){
                 if(xVelocity>0){
                     setXVelocity(0);
                 }
             }
         }
-
     }
     private void checkRightWallCollision(ArrayList<Platform> platforms){
         for (int i = 0; i<platforms.size(); i++){
@@ -238,33 +243,33 @@ public class Player {
             int[][] currentWall = platforms.get(i).getRightWall();
             //check bottom left player corner
             if (boundingBox[2][1] > currentWall[0][1] && boundingBox[2][1] < currentWall[1][1]){
-                if (boundingBox[2][0]<=currentWall[0][0]&& boundingBox[2][0] >= (currentWall[0][0]-platforms.get(i).getWidth())){
+                if (boundingBox[2][0]<=currentWall[0][0]+fudgeFactor&& boundingBox[2][0] >= (currentWall[0][0]-platforms.get(i).getWidth()-fudgeFactor)){
                     colliding = true;
                     System.out.println("Colliding with Right Wall Case 1");
                 }
             }
             //check top left player corner
-            if (boundingBox[0][1] < currentWall[0][1] && boundingBox[0][1] > currentWall[1][1]){
-                if (boundingBox[0][0]<=currentWall[0][0] && boundingBox[0][0] >= (currentWall[0][0]-platforms.get(i).getWidth())){
+            if (boundingBox[0][1] > currentWall[0][1] && boundingBox[0][1] < currentWall[1][1]){
+                if (boundingBox[0][0]<=currentWall[0][0]+fudgeFactor && boundingBox[0][0] >= (currentWall[0][0]-platforms.get(i).getWidth()-fudgeFactor)){
                     colliding = true;
                     System.out.println("Colliding with Right Wall Case 2");
                 }
             }
             //check in between 
             if (boundingBox[2][1] > currentWall[0][1] && boundingBox[0][1] < currentWall[1][1]){
-                if (boundingBox[2][0]<= currentWall[0][0] && boundingBox[2][0] >= (currentWall[0][0]-platforms.get(i).getWidth())){
+                if (boundingBox[2][0] <= currentWall[0][0] && boundingBox[0][0] >= (currentWall[0][0]-platforms.get(i).getWidth())){
                     colliding = true;
                     System.out.println("Colliding with Right Wall Case 3");
                 }
             }
 
             if (colliding){
+                workingPlatforms.add(platforms.get(i));
                 if(xVelocity<0){
                     setXVelocity(0);
                 }
             }
         }
-
     }
     private void checkFloorCollision(ArrayList<Platform> platforms){
         boolean touchingAnyGround = false;
@@ -316,7 +321,7 @@ public class Player {
             boolean colliding = false;
             int[][] currentCeiling = platforms.get(i).getCeiling();
             //check top left player corner
-            if (boundingBox[0][0] <= currentCeiling[1][0]-2*fudgeFactor && boundingBox[0][0] >= currentCeiling[0][0]+2*fudgeFactor){
+            if (boundingBox[0][0] <= currentCeiling[1][0]-fudgeFactor && boundingBox[0][0] >= currentCeiling[0][0]+fudgeFactor){
                 if (boundingBox[0][1]<= currentCeiling[0][1] && boundingBox[0][1] >= (currentCeiling[0][1]-platforms.get(i).getHeight())){
                     colliding = true;
                     System.out.println("Colliding with Ceiling Case 1");
@@ -324,7 +329,7 @@ public class Player {
             }
             
             //check top right player corner
-            if (boundingBox[1][0] <= currentCeiling[1][0]-2*fudgeFactor && boundingBox[1][0] >= currentCeiling[0][0]+2*fudgeFactor){
+            if (boundingBox[1][0] <= currentCeiling[1][0]-fudgeFactor && boundingBox[1][0] >= currentCeiling[0][0]+fudgeFactor){
                 if (boundingBox[1][1]<= currentCeiling[0][1] && boundingBox[1][1] >= (currentCeiling[0][1]-platforms.get(i).getHeight())){
                     colliding = true;
                     System.out.println("Colliding with Ceiling Case 2");

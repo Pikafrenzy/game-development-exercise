@@ -330,6 +330,10 @@ public class Game extends PApplet {
     currentScenePlatforms.add(new Platform(this, dirtTile, 640,0,128,128));
     currentScenePlatforms.add(new Platform(this, dirtTile, 768,0,128,128));
 
+    //border walls
+    currentScenePlatforms.add(new WallPlatform(this, missingTile, -128,0,128,this.height));
+    currentScenePlatforms.add(new WallPlatform(this, missingTile, this.width,0,128,this.height));
+
     // jumping platforms
     currentScenePlatforms.add(new Platform(this, dirtTile, 50,600, 128,128));
     currentScenePlatforms.add(new Platform(this, dirtTile, 350, 550, 128, 128));
@@ -344,6 +348,9 @@ public class Game extends PApplet {
     currentScenePlatforms.add(new Platform(this, dirtTile, 384,0,128,128));
     currentScenePlatforms.add(new Platform(this, dirtTile, 512,0,128,128));
     currentScenePlatforms.add(new Platform(this, dirtTile, 640,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 0,128,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 0,256,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 128,128,128,128));
 
     // jumping platforms
     currentScenePlatforms.add(new Platform(this, dirtTile, 50,600, 128,128));
