@@ -241,6 +241,7 @@ public class Game extends PApplet {
         }
         break;
       case "495m":
+        gameFinished = true;
         currentScenePlatforms.clear();
         levelEnd();
         this.background(160,82,45);
@@ -257,8 +258,12 @@ public class Game extends PApplet {
         }
         break;
       }
-
       if (gameStarted){
+        if (!soundtrack.isPlaying() && !soundStartup.isPlaying()){
+          soundtrack.play();
+        }
+      }
+      if (gameStarted && !gameFinished){
         if (isRightPressed){
           player.moveRight();
         }
@@ -270,9 +275,7 @@ public class Game extends PApplet {
         player.checkCollisions(currentScenePlatforms);
         player.changePlayerPosition();
         player.draw();
-        if (!soundtrack.isPlaying() && !soundStartup.isPlaying()){
-          soundtrack.play();
-        }
+        
         if (player.getY() > this.height+100){
           player.restart();
           resetLevels();
@@ -307,22 +310,22 @@ public class Game extends PApplet {
             }
             break;
           case 'c':
-            if(gameStarted){
+            if(gameStarted&&!gameFinished){
               player.jump();
             }
             break;
           case 'x':
-            if(gameStarted){
+            if(gameStarted&&!gameFinished){
               player.doubleJump();
             }
             break;
           case 'z':
-            if(gameStarted){
+            if(gameStarted&&!gameFinished){
               player.glide();
             }
             break;
           case 'r':
-            if(gameStarted){
+            if(gameStarted&&!gameFinished){
               resetLevels();
               player.restart();
             }
@@ -362,7 +365,7 @@ public class Game extends PApplet {
   private void startGame(){
     gameStarted = true;
     // create Player object
-    player = new Player(this, playerStill, playerGlide, playerRFootMove, playerLFootMove, 50, this.height-250,128,128);
+    player = new Player(this, playerStill, playerGlide, playerRFootMove, playerLFootMove, 50, 600,128,128);
     scene = "0m";
     timer = 0.0;
   }
@@ -378,10 +381,17 @@ public class Game extends PApplet {
   }
   private String getTimerDisplayValue(){
     String display = "";
-    int seconds = (int) timer;
-    int minutes = seconds/60;
-    int milliseconds = (int) ((timer - seconds)*1000);
-    display = minutes + ":" + seconds + "." + milliseconds;
+    int seconds = (int) timer %60;
+    String secondsString = "";
+    if (seconds <10){
+      secondsString += "0" + seconds;
+    }
+    else {
+      secondsString += seconds;
+    }
+    int minutes = (int) (timer/60);
+    int milliseconds = (int) ((timer - seconds - minutes*60)*1000);
+    display = minutes + ":" + secondsString + "." + milliseconds;
     return display;
   }
 
@@ -412,6 +422,38 @@ public class Game extends PApplet {
     levelOneCreated = true;
   }
   private void levelTwo(){ //100m
+    
+
+    //ceiling
+    currentScenePlatforms.add(new Platform(this, dirtTile, 0,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 128,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 128,128,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 256,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 256,128,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 256,256,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 384,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 384,128,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 384,256,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 384,384,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 512,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 640,0,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 768,0,128,128));
+    
+    //border walls
+    currentScenePlatforms.add(new WallPlatform(this, missingTile, -128,0,128,this.height));
+    currentScenePlatforms.add(new WallPlatform(this, missingTile, this.width,0,128,this.height));
+    
+     // jumping platforms
+    currentScenePlatforms.add(new Platform(this, dirtTile, 50,600, 128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 640,this.height-64,64,64));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 704,this.height-64,64,64));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 832,576,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, 512,384,128,128));
+    currentScenePlatforms.add(new Platform(this, dirtTile, this.width-128,256,128,128));
+    
+    levelTwoCreated = true;
+    }
+  private void levelThree(){ //200m
     //ceiling
     currentScenePlatforms.add(new Platform(this, dirtTile, 0,0,128,128));
     currentScenePlatforms.add(new Platform(this, dirtTile, 128,0,128,128));
@@ -434,7 +476,6 @@ public class Game extends PApplet {
     currentScenePlatforms.add(new Platform(this, dirtTile, 704,448,64,64));
     currentScenePlatforms.add(new Platform(this, dirtTile, 768,384,128,128));
 
-    
     //border walls
     currentScenePlatforms.add(new WallPlatform(this, missingTile, -128,0,128,this.height));
     currentScenePlatforms.add(new WallPlatform(this, missingTile, this.width,0,128,this.height));
@@ -447,10 +488,36 @@ public class Game extends PApplet {
     currentScenePlatforms.add(new Platform(this, dirtTile,896,384,64,64));
     currentScenePlatforms.add(new Platform(this, dirtTile,896,448,64,64));
     currentScenePlatforms.add(new Platform(this, dirtTile, 768,256,128,128));
+    
+    levelThreeCreated = true;
+  }
+  private void levelFour(){ //300m
+     //ceiling
+     currentScenePlatforms.add(new Platform(this, dirtTile, 0,0,128,128));
+     currentScenePlatforms.add(new Platform(this, dirtTile, 128,0,128,128));
+     currentScenePlatforms.add(new Platform(this, dirtTile, 256,0,128,128));
+     currentScenePlatforms.add(new Platform(this, dirtTile, 384,0,128,128));
+     currentScenePlatforms.add(new Platform(this, dirtTile, 512,0,128,128));
+     currentScenePlatforms.add(new Platform(this, dirtTile, 640,0,128,128));
+     currentScenePlatforms.add(new Platform(this, dirtTile, 768,0,128,128));
+     currentScenePlatforms.add(new Platform(this, dirtTile, 0,128,128,128));
+     currentScenePlatforms.add(new Platform(this, dirtTile, 0,256,128,128));
+     currentScenePlatforms.add(new Platform(this, dirtTile, 128,128,128,128));
+     currentScenePlatforms.add(new Platform(this, dirtTile, 256,128,128,128));
+ 
+     //border walls
+     currentScenePlatforms.add(new WallPlatform(this, missingTile, -128,0,128,this.height));
+     currentScenePlatforms.add(new WallPlatform(this, missingTile, this.width,0,128,this.height));
+ 
+     // jumping platforms
+     currentScenePlatforms.add(new Platform(this, dirtTile, 50,600, 128,128));
+     currentScenePlatforms.add(new FallingPlatform(this, fallingTile, 300,500, 128,128));
+     currentScenePlatforms.add(new Platform(this, dirtTile, 700,450,128,128));
+     currentScenePlatforms.add(new FallingPlatform(this, fallingTile, 900,300, 128,128));
 
-    levelTwoCreated = true;
-    }
-  private void levelThree(){ //200m
+    levelFourCreated = true;
+  }
+  private void levelFive(){ //400m
     //ceiling
     currentScenePlatforms.add(new Platform(this, dirtTile, 0,0,128,128));
     currentScenePlatforms.add(new Platform(this, dirtTile, 128,0,128,128));
@@ -470,52 +537,10 @@ public class Game extends PApplet {
 
     // jumping platforms
     currentScenePlatforms.add(new Platform(this, dirtTile, 50,600, 128,128));
-    currentScenePlatforms.add(new FallingPlatform(this, fallingTile, 300,500, 128,128));
-    currentScenePlatforms.add(new Platform(this, dirtTile, 450,600,128,128));
-    currentScenePlatforms.add(new Platform(this, dirtTile, 700,450,128,128));
-    currentScenePlatforms.add(new FallingPlatform(this, fallingTile, 900,300, 128,128));
-    currentScenePlatforms.add(new Platform(this, dirtTile, 1028,428,128,128));
-    currentScenePlatforms.add(new Platform(this, dirtTile, this.width-128,364,64,64));
-    currentScenePlatforms.add(new Platform(this, dirtTile, this.width-64,300,64,64));
-    currentScenePlatforms.add(new Platform(this, dirtTile, this.width-64,364,64,64));
-
-    levelThreeCreated = true;
-  }
-  private void levelFour(){ //300m
-    //ceiling
-    currentScenePlatforms.add(new Platform(this, dirtTile, 0,0,128,128));
-    currentScenePlatforms.add(new Platform(this, dirtTile, 128,0,128,128));
-    currentScenePlatforms.add(new Platform(this, dirtTile, 256,0,128,128));
-    currentScenePlatforms.add(new Platform(this, dirtTile, 384,0,128,128));
-    currentScenePlatforms.add(new Platform(this, dirtTile, 512,0,128,128));
-    currentScenePlatforms.add(new Platform(this, dirtTile, 640,0,128,128));
-    currentScenePlatforms.add(new Platform(this, dirtTile, 768,0,128,128));
-
-    //border walls
-    currentScenePlatforms.add(new WallPlatform(this, missingTile, -128,0,128,this.height));
-    currentScenePlatforms.add(new WallPlatform(this, missingTile, this.width,0,128,this.height));
-
-    // jumping platforms
-    currentScenePlatforms.add(new Platform(this, dirtTile, 50,600, 128,128));
-
-    levelFourCreated = true;
-  }
-  private void levelFive(){ //400m
-    //ceiling
-    currentScenePlatforms.add(new Platform(this, dirtTile, 0,0,128,128));
-    currentScenePlatforms.add(new Platform(this, dirtTile, 128,0,128,128));
-    currentScenePlatforms.add(new Platform(this, dirtTile, 256,0,128,128));
-    currentScenePlatforms.add(new Platform(this, dirtTile, 384,0,128,128));
-    currentScenePlatforms.add(new Platform(this, dirtTile, 512,0,128,128));
-    currentScenePlatforms.add(new Platform(this, dirtTile, 640,0,128,128));
-    currentScenePlatforms.add(new Platform(this, dirtTile, 768,0,128,128));
-
-    //border walls
-    currentScenePlatforms.add(new WallPlatform(this, missingTile, -128,0,128,this.height));
-    currentScenePlatforms.add(new WallPlatform(this, missingTile, this.width,0,128,this.height));
-
-    // jumping platforms
-    currentScenePlatforms.add(new Platform(this, dirtTile, 50,600, 128,128));
+    currentScenePlatforms.add(new FallingPlatform(this, fallingTile, 384,576, 128,128));
+    currentScenePlatforms.add(new FallingPlatform(this, fallingTile, 448,448, 128,128));
+    currentScenePlatforms.add(new FallingPlatform(this, fallingTile, 832,384, 128,128));
+    currentScenePlatforms.add(new FallingPlatform(this, fallingTile, 1024,256, 128,128));
 
     levelFiveCreated = true;
   }
@@ -545,8 +570,10 @@ public class Game extends PApplet {
     fill(255,255,255);
   }
   private void checkLevelWin(){
-    if (gameStarted){
+    if (gameStarted&&!gameFinished){
       if (player.getY()<=0){
+        player.restart();
+        player.setDeaths(player.getDeaths()-1);
         switch(scene){
           case "0m":
             this.scene = "100m";
@@ -564,8 +591,6 @@ public class Game extends PApplet {
             this.scene = "495m";
             break;
         }
-        player.restart();
-        player.setDeaths(player.getDeaths()-1);
       }
     }
   }

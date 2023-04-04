@@ -446,6 +446,5 @@ public class Player {
         setY(initY);
         canGlide = false;
         deaths++;
-        doubleJump = 1; //TODO: remove when done coding game
     }
 }

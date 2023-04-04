@@ -20,11 +20,13 @@ public class FallingPlatform extends Platform{
         // draw this object's image at its x and y coordinates
         this.app.imageMode(PApplet.CORNER); // setting so the image is drawn centered on the specified x and y coordinates
         if(triggered){
-            this.setY(getY()+5);
+            if(timer >=5){
+                this.setY(getY()+timer);
+            }
             timer++;
         }
         this.app.image(this.img, this.x, this.y, this.width, this.height);
-        if (timer >= 20){
+        if (this.getY() > app.height){
             shouldRemove = true;
         }
     }
