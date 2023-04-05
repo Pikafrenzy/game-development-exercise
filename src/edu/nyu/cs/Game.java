@@ -102,7 +102,6 @@ public class Game extends PApplet {
     path = Paths.get(cwd,"images","missingTile.png").toString();
     this.missingTile = loadImage(path);
 
-
     adjuster = new Sound(this);
     adjuster.volume(0.5f);
 
