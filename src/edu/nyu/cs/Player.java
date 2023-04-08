@@ -447,4 +447,8 @@ public class Player {
         canGlide = false;
         deaths++;
     }
+    public void freeze(){
+        setXVelocity(0);
+        setYVelocity(0);
+    }
 }

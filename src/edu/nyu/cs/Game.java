@@ -32,6 +32,7 @@ public class Game extends PApplet {
   private PImage playerRFootMove;
   private PImage playerLFootMove;
   private PImage playerGlide;
+  private PImage endFrame;
   private ArrayList<Platform> currentScenePlatforms = new ArrayList<Platform>();
   private ArrayList<Integer> remove = new ArrayList<Integer>();
   private boolean instructionsShowing = false;
@@ -101,6 +102,10 @@ public class Game extends PApplet {
     // load missing tile
     path = Paths.get(cwd,"images","missingTile.png").toString();
     this.missingTile = loadImage(path);
+
+    // load ending frame
+    path = Paths.get(cwd,"images","endFrame.png").toString();
+    this.endFrame = loadImage(path);
 
     adjuster = new Sound(this);
     adjuster.volume(0.5f);
@@ -244,6 +249,7 @@ public class Game extends PApplet {
         currentScenePlatforms.clear();
         levelEnd();
         this.background(0, 49, 82);
+        image(this.endFrame,this.width/2,this.height/2);
         textSize(80);
         text("THE END",this.width/2, this.height/2);
         fill(255,0,0);
@@ -253,6 +259,7 @@ public class Game extends PApplet {
         break;
       }
       if (gameStarted){
+        player.draw();
         if (!soundtrack.isPlaying() && !soundStartup.isPlaying()){
           soundtrack.play();
         }
@@ -268,9 +275,8 @@ public class Game extends PApplet {
         player.processVelocity();
         player.checkCollisions(currentScenePlatforms);
         player.changePlayerPosition();
-        player.draw();
         
-        if (player.getY() > this.height+100){
+        if (player.getY() > this.height+100 && !gameFinished){
           player.restart();
           resetLevels();
         }
@@ -539,7 +545,7 @@ public class Game extends PApplet {
     levelFiveCreated = true;
   }
   private void levelEnd(){ //495m
-
+    player.freeze();
   }
 
   public PImage missingTile(){
