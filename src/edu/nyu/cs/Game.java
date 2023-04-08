@@ -1,5 +1,5 @@
 package edu.nyu.cs;
-//TODO: design and implement levels, design falling platform
+
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
@@ -249,13 +249,14 @@ public class Game extends PApplet {
         currentScenePlatforms.clear();
         levelEnd();
         this.background(0, 49, 82);
+        this.imageMode(PApplet.CENTER);
         image(this.endFrame,this.width/2,this.height/2);
-        textSize(80);
-        text("THE END",this.width/2, this.height/2);
-        fill(255,0,0);
-        textSize(81);
-        text("THE END",this.width/2, this.height/2);
-        fill(255,200,200);
+        player.setX(300);
+        player.setY(450);
+        
+        text("Total Deaths: " + player.getDeaths(),this.width/2,this.height/2-200);
+        text("Total Time: " + getTimerDisplayValue(),this.width/2,this.height/2-100);
+        text("Thank you for playing. Glory to Hong Kong!", this.width/2, this.height/2-300);
         break;
       }
       if (gameStarted){

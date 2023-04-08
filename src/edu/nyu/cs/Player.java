@@ -33,7 +33,9 @@ public class Player {
     private boolean isMovingLeft = false;
     private boolean isMovingRight = false;
     private boolean isTouchingGround = false;
+    private boolean frozen = false;
     private int doubleJump = 1;
+    private PImage currentImage;
     private ArrayList<Platform> workingPlatforms =  new ArrayList<Platform>();
     private final int LMargin = 28;
     private final int RMargin = 40;
@@ -356,31 +358,34 @@ public class Player {
         this.app.imageMode(PApplet.CORNER); // setting so the image is drawn centered on the specified x and y coordinates
         this.app.image(this.getCurrentImage(), this.x, this.y,this.width,this.height);
     }
-
+    public void setCurrentImage(PImage image){
+        this.currentImage = image;
+    }
     public PImage getCurrentImage(){
-        PImage currentImage;
-        if (isGliding){
-            currentImage = glide;
-        }
-        else if(isMovingLeft||isMovingRight){
-            if (animationFlip>=0 && animationFlip < 4){
-                currentImage = moveRFoot;
-                animationFlip++;
+        if(!frozen){
+            if (isGliding){
+                currentImage = glide;
             }
-            else if((animationFlip >=4 && animationFlip <8) || (animationFlip >=12 && animationFlip<16)){
-                currentImage = still;
-                animationFlip++;
-                if(animationFlip == 15){
-                    animationFlip = 0;
+            else if(isMovingLeft||isMovingRight){
+                if (animationFlip>=0 && animationFlip < 4){
+                    currentImage = moveRFoot;
+                    animationFlip++;
+                }
+                else if((animationFlip >=4 && animationFlip <8) || (animationFlip >=12 && animationFlip<16)){
+                    currentImage = still;
+                    animationFlip++;
+                    if(animationFlip == 15){
+                        animationFlip = 0;
+                    }
+                }
+                else {
+                    currentImage = moveLFoot;
+                    animationFlip++;
                 }
             }
             else {
-                currentImage = moveLFoot;
-                animationFlip++;
+                currentImage = still;
             }
-        }
-        else {
-            currentImage = still;
         }
         return currentImage;
     }
@@ -450,5 +455,9 @@ public class Player {
     public void freeze(){
         setXVelocity(0);
         setYVelocity(0);
+        isMovingLeft=false;
+        isMovingRight=false;
+        this.setCurrentImage(still);
+        frozen = true;
     }
 }
